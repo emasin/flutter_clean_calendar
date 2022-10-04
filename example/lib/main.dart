@@ -1,3 +1,4 @@
+import 'package:example/screens/create_new_task_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_clean_calendar/flutter_clean_calendar.dart';
 import 'package:flutter_clean_calendar/clean_calendar_event.dart';
@@ -109,20 +110,35 @@ class _CalendarScreenState extends State<CalendarScreen> {
       body: SafeArea(
         child: Calendar(
           startOnMonday: true,
-          weekDays: ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],
+          weekDays: ['일', '월', '화', '수', '목', '금', '토'],
           events: _events,
           isExpandable: true,
           eventDoneColor: Colors.green,
           selectedColor: Colors.pink,
           todayColor: Colors.blue,
           eventColor: Colors.grey,
-          locale: 'de_DE',
+          hideTodayIcon:true,
+          locale: 'ko_KR',
           todayButtonText: 'Heute',
           isExpanded: true,
           expandableDateFormat: 'EEEE, dd. MMMM yyyy',
           dayOfWeekStyle: TextStyle(
               color: Colors.black, fontWeight: FontWeight.w800, fontSize: 11),
         ),
+      ),
+      floatingActionButton: new  FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CreateNewTaskPage(),
+            ),
+          );
+        },
+        child: Icon(Icons.add),
+        mini: true
+
+
       ),
     );
   }
