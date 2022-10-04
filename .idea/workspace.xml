@@ -2,21 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f198b425-b7f0-4909-8da2-57ded7dcae6a" name="변경" comment="">
-      <change afterPath="$PROJECT_DIR$/example/lib/screens/create_new_task_page.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/example/lib/theme/colors/light_colors.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/example/lib/theme/theme.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/example/lib/widgets/back_button.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/example/lib/widgets/my_text_field.dart" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/example/lib/widgets/top_container.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_SDK.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/Flutter/AppFrameworkInfo.plist" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Flutter/AppFrameworkInfo.plist" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/Runner/Info.plist" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Runner/Info.plist" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/flutter_clean_calendar.iml" beforeDir="false" afterPath="$PROJECT_DIR$/flutter_clean_calendar.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/lib/screens/create_new_task_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/screens/create_new_task_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/example/lib/widgets/my_text_field.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/widgets/my_text_field.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/calendar_tile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/calendar_tile.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/clean_calendar_event.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/clean_calendar_event.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/flutter_clean_calendar.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/flutter_clean_calendar.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,19 +39,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "dart.analysis.tool.window.visible": "false",
-    "io.flutter.reload.alreadyRun": "true",
-    "last_opened_file_path": "/Users/gwangrakhong/DEV/devkids/flutter_clean_calendar/example/lib/widgets",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "flutter.settings",
-    "show.migrate.to.gradle.popup": "false"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
+    &quot;io.flutter.reload.alreadyRun&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/gwangrakhong/IdeaProjects/flutter_clean_calendar&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;flutter.settings&quot;,
+    &quot;show.migrate.to.gradle.popup&quot;: &quot;false&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/example/lib/widgets" />
@@ -82,6 +76,7 @@
       <updated>1664839885566</updated>
       <workItem from="1664839886949" duration="70000" />
       <workItem from="1664839964019" duration="2272000" />
+      <workItem from="1664891974458" duration="4420000" />
     </task>
     <servers />
   </component>

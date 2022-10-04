@@ -382,11 +382,10 @@ class _CalendarState extends State<Calendar> {
                 itemBuilder: (BuildContext context, int index) {
                   final CleanCalendarEvent event = _selectedEvents![index];
                   final String start =
-                      DateFormat('HH:mm').format(event.startTime).toString();
-                  final String end =
-                      DateFormat('HH:mm').format(event.endTime).toString();
+                      event.startTime;
+
                   return Container(
-                    height: 60.0,
+                    height: 50.0,
                     child: InkWell(
                       onTap: () {
                         if (widget.onEventSelected != null) {
@@ -406,18 +405,34 @@ class _CalendarState extends State<Calendar> {
                             ),
                           ),
                           Expanded(
-                            flex: 75,
+                            flex: 20,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(event.summary,
+                                  Text(event.payType,
                                       style: Theme.of(context)
                                           .textTheme
                                           .subtitle2),
-                                  Text(event.description)
+                                ],
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 25,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(event.mainCategory,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .subtitle2),
+
                                 ],
                               ),
                             ),
@@ -427,17 +442,31 @@ class _CalendarState extends State<Calendar> {
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(event.subCategory,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .subtitle2),
+
+                                ],
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            flex: 30,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(start,
+                                  Text(NumberFormat.currency(locale: "ko_KR", symbol: "￦").format(event.money).toString(),
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyText1),
-                                  Text(end,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1),
+
                                 ],
                               ),
                             ),

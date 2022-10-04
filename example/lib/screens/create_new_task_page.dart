@@ -3,7 +3,7 @@ import 'package:example/theme/colors/light_colors.dart';
 import 'package:example/widgets/top_container.dart';
 import 'package:example/widgets/back_button.dart';
 import 'package:example/widgets/my_text_field.dart';
-
+import 'package:intl/intl.dart';
 
 class CreateNewTaskPage extends StatelessWidget {
   @override
@@ -26,30 +26,23 @@ class CreateNewTaskPage extends StatelessWidget {
                   SizedBox(
                     height: 30,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        'Create new task',
-                        style: TextStyle(
-                            fontSize: 30.0, fontWeight: FontWeight.w700),
-                      ),
-                    ],
-                  ),
+
                   SizedBox(height: 20),
                   Container(
                       child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      MyTextField(label: 'Title'),
+                      MyTextField(label: '수입/지출',defaultText: '지출',),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: <Widget>[
                           Expanded(
                             child: MyTextField(
-                              label: 'Date',
+                              label: '날짜',
                               icon: downwardIcon,
+                              defaultText: '${DateFormat('yyyy-MM-dd').format(DateTime.now())}',
+
                             ),
                           ),
               CircleAvatar(
@@ -73,28 +66,32 @@ class CreateNewTaskPage extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: <Widget>[
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Expanded(
-                          child: MyTextField(
-                        label: 'Start Time',
-                        icon: downwardIcon,
-                      )),
-                      SizedBox(width: 40),
-                      Expanded(
-                        child: MyTextField(
-                          label: 'End Time',
-                          icon: downwardIcon,
-                        ),
-                      ),
-                    ],
+                  MyTextField(
+                    label: '현금/은행/카드',
+                    minLines: 1,
+                    maxLines: 1,
+                    defaultText: '카드',
                   ),
                   SizedBox(height: 20),
                   MyTextField(
-                    label: 'Description',
-                    minLines: 3,
-                    maxLines: 3,
+                    label: '분류',
+                    minLines: 1,
+                    maxLines: 1,
+                    defaultText: '식비',
+                  ),
+                  SizedBox(height: 20),
+                  MyTextField(
+                    label: '금액',
+                    minLines: 1,
+                    maxLines: 1,
+                    defaultText: '',
+                  ),
+                  SizedBox(height: 20),
+                  MyTextField(
+                    label: '상세 분류',
+                    minLines: 1,
+                    maxLines: 1,
+                    defaultText: '맥모닝',
                   ),
                   SizedBox(height: 20),
                   Container(
@@ -151,7 +148,7 @@ class CreateNewTaskPage extends StatelessWidget {
                 children: <Widget>[
                   Container(
                     child: Text(
-                      'Create Task',
+                      '저장하기',
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w700,

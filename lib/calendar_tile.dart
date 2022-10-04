@@ -137,12 +137,10 @@ class CalendarTile extends StatelessWidget {
                                 // color property of the CleanCalendarEvent. If both aren't set, then
                                 // the accent color of the theme get used.
                                 color: (() {
-                                  if (event.isDone)
-                                    return eventDoneColor ??
+
+                                    return
                                         Theme.of(context).primaryColor;
-                                  if (isSelected) return Colors.white;
-                                  return eventColor ??
-                                      Theme.of(context).accentColor;
+
                                 }())),
                           );
                         }).toList())

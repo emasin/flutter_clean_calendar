@@ -1,7 +1,6 @@
 import 'package:example/screens/create_new_task_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_clean_calendar/flutter_clean_calendar.dart';
-import 'package:flutter_clean_calendar/clean_calendar_event.dart';
 
 void main() => runApp(MyApp());
 
@@ -25,74 +24,20 @@ class CalendarScreen extends StatefulWidget {
 
 class _CalendarScreenState extends State<CalendarScreen> {
   final Map<DateTime, List<CleanCalendarEvent>> _events = {
-    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day): [
-      CleanCalendarEvent('Event A',
-          startTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day, 10, 0),
-          endTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day, 12, 0),
-          description: 'A special event',
-          color: Colors.blue[700]),
-    ],
-    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 2):
-        [
-      CleanCalendarEvent('Event B',
-          startTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 10, 0),
-          endTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 12, 0),
-          color: Colors.orange),
-      CleanCalendarEvent('Event C',
-          startTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 14, 30),
-          endTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 17, 0),
-          color: Colors.pink),
-    ],
+
     DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 3):
         [
-      CleanCalendarEvent('Event B',
-          startTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 10, 0),
-          endTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 12, 0),
-          color: Colors.orange),
-      CleanCalendarEvent('Event C',
-          startTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 14, 30),
-          endTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 17, 0),
-          color: Colors.pink),
-      CleanCalendarEvent('Event D',
-          startTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 14, 30),
-          endTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 17, 0),
-          color: Colors.amber),
-      CleanCalendarEvent('Event E',
-          startTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 14, 30),
-          endTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 17, 0),
-          color: Colors.deepOrange),
-      CleanCalendarEvent('Event F',
-          startTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 14, 30),
-          endTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 17, 0),
-          color: Colors.green),
-      CleanCalendarEvent('Event G',
-          startTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 14, 30),
-          endTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 17, 0),
-          color: Colors.indigo),
-      CleanCalendarEvent('Event H',
-          startTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 14, 30),
-          endTime: DateTime(DateTime.now().year, DateTime.now().month,
-              DateTime.now().day + 2, 17, 0),
-          color: Colors.brown),
+      CleanCalendarEvent('수입','현급','용돈',90000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.blue),
+          CleanCalendarEvent('지출','현급','식비',12000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '점심'),
+          CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '출근'),
+          CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '퇴근'),
+    ],
+    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day ):
+    [
+      CleanCalendarEvent('지출','카드','식비',4200,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '맥모닝'),
+      CleanCalendarEvent('지출','현급','식비',9800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '점심'),
+      CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '출근'),
+      CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '퇴근'),
     ],
   };
 

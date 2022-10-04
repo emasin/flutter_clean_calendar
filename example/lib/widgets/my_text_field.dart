@@ -5,12 +5,13 @@ class MyTextField extends StatelessWidget {
   final int maxLines;
   final int minLines;
   final Icon icon;
-  MyTextField({this.label, this.maxLines = 1, this.minLines = 1, this.icon});
+  final String defaultText;
+  MyTextField({this.label, this.maxLines = 1, this.minLines = 1, this.icon,this.defaultText=''});
 
   @override
   Widget build(BuildContext context) {
     return TextField(
-      
+      controller: TextEditingController(text: defaultText),
       style: TextStyle(color: Colors.black87),
       minLines: minLines,
       maxLines: maxLines,
