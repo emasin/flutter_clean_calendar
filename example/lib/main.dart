@@ -154,14 +154,41 @@ class _CalendarScreenState extends State<CalendarScreen> {
     _handleNewDate(DateTime(
         DateTime.now().year, DateTime.now().month, DateTime.now().day));
   }
-
+  int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        bottomNavigationBar:BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.grey,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.white.withOpacity(.60),
+          selectedFontSize: 14,
+          unselectedFontSize: 14,
+          currentIndex: _selectedIndex, //현재 선택된 Index
+          onTap: (int index) {
+            setState(() {
+              _selectedIndex = index;
+            });
+          },
+          items: [
+          BottomNavigationBarItem(
+            label:'',
+            icon: Icon(Icons.calendar_month),
+          ),
+          BottomNavigationBarItem(
+            label:'',
+            icon: Icon(Icons.comment),
+          ),
+          BottomNavigationBarItem(
+            label:'',
+            icon: Icon(Icons.person),
+          ),
 
+        ],),
       body: SafeArea(
 
-        child: Stack(alignment: AlignmentDirectional.bottomCenter,
+        child: _selectedIndex == 0 ? Stack(alignment: AlignmentDirectional.bottomCenter,
             children: <Widget>[
               Calendar(
                 startOnMonday: true,
@@ -205,8 +232,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
 
               _getAdWidget()
-            ])
-      ),
+            ]): _selectedIndex == 1 ? Container(child:Text('Community')) : Container(child:Text('My'))
+      ) ,
 
     );
   }

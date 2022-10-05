@@ -3,18 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="f198b425-b7f0-4909-8da2-57ded7dcae6a" name="변경" comment="[feature]&#10;입력 관련 부분 추가">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/Flutter/Debug.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Flutter/Debug.xcconfig" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/Flutter/Release.xcconfig" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Flutter/Release.xcconfig" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/Runner.xcworkspace/contents.xcworkspacedata" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Runner.xcworkspace/contents.xcworkspacedata" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/ios/Runner/Info.plist" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Runner/Info.plist" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/screens/create_new_task_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/screens/create_new_task_page.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/widgets/my_text_field.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/widgets/my_text_field.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/lib/widgets/top_container.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/widgets/top_container.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/calendar_tile.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/calendar_tile.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/flutter_clean_calendar.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/flutter_clean_calendar.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
