@@ -4,9 +4,9 @@ import 'package:finan_ledger/theme/colors/light_colors.dart';
 class TopContainer extends StatelessWidget {
   final double height;
   final double width;
-  final Widget child;
-  final EdgeInsets padding;
-  TopContainer({this.height, this.width, this.child, this.padding});
+  final Widget? child;
+  final EdgeInsets? padding;
+  TopContainer({this.height = 50.0, this.width=0.0, this.child, this.padding});
 
 
   @override

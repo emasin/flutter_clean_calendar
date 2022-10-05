@@ -6,9 +6,9 @@ class MyTextField extends StatelessWidget {
   final int maxLines;
   final int minLines;
   final int keyboardType;
-  final Icon icon;
+  final Icon? icon;
   final String defaultText;
-  MyTextField({this.label, this.maxLines = 1, this.minLines = 1, this.icon,this.defaultText='',this.keyboardType = 1});
+  MyTextField({this.label = '', this.maxLines = 1, this.minLines = 1, this.icon,this.defaultText='',this.keyboardType = 1});
 
   @override
   Widget build(BuildContext context) {

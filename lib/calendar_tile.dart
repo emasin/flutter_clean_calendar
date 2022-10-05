@@ -88,12 +88,13 @@ class CalendarTile extends StatelessWidget {
             // the color passed with the selectedColor parameter or red color.
             decoration: isSelected && date != null
                 ? BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: selectedColor != null
-                        ? Utils.isSameDay(this.date!, DateTime.now())
-                            ? Colors.red
-                            : selectedColor
-                        : Theme.of(context).primaryColor,
+
+                    shape: BoxShape.rectangle,
+              border: Border.all(
+                color: Colors.red, //                   <--- border color
+                width: 0.5,
+              ),
+
                   )
                 : BoxDecoration(), // no decoration when not selected
             alignment: Alignment.center,
@@ -107,7 +108,7 @@ class CalendarTile extends StatelessWidget {
                       fontSize: 14.0,
                       fontWeight: FontWeight.w400,
                       color: isSelected && this.date != null
-                          ? Colors.white
+                          ? Colors.black
                           : Utils.isSameDay(this.date!, DateTime.now())
                               ? todayColor
                               : inMonth
@@ -117,34 +118,18 @@ class CalendarTile extends StatelessWidget {
                 ),
                 // Dots for the events
                 events != null && events!.length > 0
-                    ? Row(
+                    ? Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: events!.map((event) {
                           eventCount++;
                           // Show a maximum of 3 dots.
-                          if (eventCount > 3) return Container();
+                          if (eventCount > 2) return Container();
                           return Container(
-                            margin: EdgeInsets.only(
-                                left: 2.0, right: 2.0, top: 1.0),
-                            width: 5.0,
-                            height: 5.0,
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                // If event is done (isDone == true) set the color of the dots to
-                                // the eventDoneColor (if given) otherwise use the primary color of
-                                // the theme
-                                // If the event is now donw yet, we use the given eventColor or the
-                                // color property of the CleanCalendarEvent. If both aren't set, then
-                                // the accent color of the theme get used.
-                                color: (() {
-
-                                    return
-                                        Theme.of(context).primaryColor;
-
-                                }())),
+                            alignment: Alignment.bottomRight,
+                            child: Text(NumberFormat.currency(locale: "ko_KR", symbol: "￦").format(event.money).toString(),style: TextStyle(fontSize: 8,color: eventCount == 1 ? Colors.blue : Colors.red)),
                           );
                         }).toList())
-                    : Container(),
+                    : Column(children: [Text('',style: TextStyle(fontSize: 8)),Text('',style: TextStyle(fontSize: 8))],),
               ],
             ),
           ),

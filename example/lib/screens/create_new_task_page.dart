@@ -14,12 +14,14 @@ class CreateNewTaskPage extends StatelessWidget {
       color: Colors.black54,
     );
     return Scaffold(
+
       body: SafeArea(
         child: Column(
           children: <Widget>[
             TopContainer(
               padding: EdgeInsets.fromLTRB(20, 20, 20, 40),
               width: width,
+              height: 300,
               child: Column(
                 children: <Widget>[
                   MyBackButton(),
@@ -68,6 +70,9 @@ class CreateNewTaskPage extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 20),
               child: Column(
                 children: <Widget>[
+
+
+
                   MyTextField(
                     label: '현금/은행/카드',
                     minLines: 1,
