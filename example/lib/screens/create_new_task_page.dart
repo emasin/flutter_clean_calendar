@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:example/theme/colors/light_colors.dart';
-import 'package:example/widgets/top_container.dart';
-import 'package:example/widgets/back_button.dart';
-import 'package:example/widgets/my_text_field.dart';
+import 'package:finan_ledger/theme/colors/light_colors.dart';
+import 'package:finan_ledger/widgets/top_container.dart';
+import 'package:finan_ledger/widgets/back_button.dart';
+import 'package:finan_ledger/widgets/my_text_field.dart';
 import 'package:intl/intl.dart';
 
 class CreateNewTaskPage extends StatelessWidget {
@@ -41,7 +41,9 @@ class CreateNewTaskPage extends StatelessWidget {
                             child: MyTextField(
                               label: '날짜',
                               icon: downwardIcon,
+                              keyboardType:3,
                               defaultText: '${DateFormat('yyyy-MM-dd').format(DateTime.now())}',
+
 
                             ),
                           ),
@@ -85,6 +87,7 @@ class CreateNewTaskPage extends StatelessWidget {
                     minLines: 1,
                     maxLines: 1,
                     defaultText: '',
+                    keyboardType:2
                   ),
                   SizedBox(height: 20),
                   MyTextField(
@@ -100,7 +103,7 @@ class CreateNewTaskPage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          'Category',
+                          '상세분류 선택',
                           style: TextStyle(
                             fontSize: 18,
                             color: Colors.black54,
@@ -116,21 +119,21 @@ class CreateNewTaskPage extends StatelessWidget {
                           spacing: 10.0,
                           children: <Widget>[
                             Chip(
-                              label: Text("SPORT APP"),
+                              label: Text("식비"),
                               backgroundColor: LightColors.kRed,
                               labelStyle: TextStyle(color: Colors.white),
                             ),
                             Chip(
-                              label: Text("MEDICAL APP"),
+                              label: Text("교통비"),
                             ),
                             Chip(
-                              label: Text("RENT APP"),
+                              label: Text("교육비"),
                             ),
                             Chip(
-                              label: Text("NOTES"),
+                              label: Text("공과금"),
                             ),
                             Chip(
-                              label: Text("GAMING PLATFORM APP"),
+                              label: Text("미용"),
                             ),
                           ],
                         ),

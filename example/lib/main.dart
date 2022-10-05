@@ -1,4 +1,4 @@
-import 'package:example/screens/create_new_task_page.dart';
+import 'package:finan_ledger/screens/create_new_task_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_clean_calendar/flutter_clean_calendar.dart';
 

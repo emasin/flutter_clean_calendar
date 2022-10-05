@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:example/theme/colors/light_colors.dart';
+import 'package:finan_ledger/theme/colors/light_colors.dart';
 
 class TopContainer extends StatelessWidget {
   final double height;
