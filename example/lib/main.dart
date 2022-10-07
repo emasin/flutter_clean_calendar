@@ -1,10 +1,12 @@
 import 'package:finan_ledger/screens/create_new_task_page.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_clean_calendar/flutter_clean_calendar.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'dart:io';
-
-
+import 'package:settings_ui/settings_ui.dart';
+import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
+import 'package:intl/intl.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
@@ -153,39 +155,59 @@ class _CalendarScreenState extends State<CalendarScreen> {
     // Force selection of today on first load, so that the list of today's events gets shown.
     _handleNewDate(DateTime(
         DateTime.now().year, DateTime.now().month, DateTime.now().day));
+
+    heatMapDatasets[DateTime.parse('${DateFormat('yyyy-MM-dd').format(DateTime.now().add(const Duration(days: 2)))}')] =
+        10000;
+    heatMapDatasets[DateTime.parse('${DateFormat('yyyy-MM-dd').format(DateTime.now().add(const Duration(days: 3)))}')] =
+    110000;
+
+    heatMapDatasets[DateTime.parse('${DateFormat('yyyy-MM-dd').format(DateTime.now().add(const Duration(days: -2)))}')] =
+    60000;
+
+    heatMapDatasets[DateTime.parse('${DateFormat('yyyy-MM-dd').format(DateTime.now().add(const Duration(days: 15)))}')] =
+    60000;
+
+    heatMapDatasets[DateTime.parse('${DateFormat('yyyy-MM-dd').format(DateTime.now().add(const Duration(days: 4)))}')] =
+    10000;
+    heatMapDatasets[DateTime.parse('${DateFormat('yyyy-MM-dd').format(DateTime.now().add(const Duration(days: 5)))}')] =
+    110000;
+
+    heatMapDatasets[DateTime.parse('${DateFormat('yyyy-MM-dd').format(DateTime.now().add(const Duration(days: -1)))}')] =
+    60000;
+
+    heatMapDatasets[DateTime.parse('${DateFormat('yyyy-MM-dd').format(DateTime.now().add(const Duration(days: 10)))}')] =
+    60000;
+
+
   }
   int _selectedIndex = 0;
+
+  void setSelectedIndex(int s) {
+    setState(() {
+      this._selectedIndex = s;
+    });
+  }
+
+  Map<DateTime, int> heatMapDatasets = {};
+
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        bottomNavigationBar:BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.grey,
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.white.withOpacity(.60),
-          selectedFontSize: 14,
-          unselectedFontSize: 14,
-          currentIndex: _selectedIndex, //현재 선택된 Index
-          onTap: (int index) {
-            setState(() {
-              _selectedIndex = index;
-            });
-          },
-          items: [
-          BottomNavigationBarItem(
-            label:'',
-            icon: Icon(Icons.calendar_month),
-          ),
-          BottomNavigationBarItem(
-            label:'',
-            icon: Icon(Icons.comment),
-          ),
-          BottomNavigationBarItem(
-            label:'',
-            icon: Icon(Icons.person),
-          ),
 
-        ],),
+    double height = MediaQuery.of(context).size.height;
+    List<CleanCalendarEvent>? _selectedEvents = _events[DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day )];
+
+    return Scaffold(
+      appBar:AppBar(
+        actions: [
+          GestureDetector(onTap:()=>{this.setSelectedIndex(0)},child:Icon(Icons.calendar_month,color:_selectedIndex == 0 ? Colors.cyanAccent:Colors.white)),
+          SizedBox(width:10),
+          GestureDetector(onTap:()=>{this.setSelectedIndex(1)},child:Icon(Icons.area_chart,color:_selectedIndex == 1 ? Colors.cyanAccent:Colors.white)),
+          SizedBox(width:10),
+          GestureDetector(onTap:()=>{this.setSelectedIndex(2)},child:Icon(Icons.person,color:_selectedIndex == 2 ? Colors.cyanAccent:Colors.white)),
+          SizedBox(width:15)
+        ],
+      ),
       body: SafeArea(
 
         child: _selectedIndex == 0 ? Stack(alignment: AlignmentDirectional.bottomCenter,
@@ -232,16 +254,201 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
 
               _getAdWidget()
-            ]): _selectedIndex == 1 ? Container(child:Text('Community')) : Container(child:Text('My'))
+            ]): _selectedIndex == 1 ?
+          Container(child: Column(
+            children: [
+              Card(
+                margin: const EdgeInsets.all(5),
+                elevation: 10,
+                child: Padding(
+                  padding: const EdgeInsets.all(5),
+
+                  // HeatMapCalendar
+                  child: HeatMapCalendar(
+                    flexible: true,
+                    datasets: heatMapDatasets,
+                    colorMode:
+                    isOpacityMode ? ColorMode.opacity : ColorMode.color,
+                    colorsets: const {
+                      1: Colors.red,
+                      3: Colors.orange,
+                      5: Colors.yellow,
+                      7: Colors.green,
+                      9: Colors.blue,
+                      11: Colors.indigo,
+                      13: Colors.purple,
+                    },
+                  ),
+                ),
+              ),
+              SizedBox(height: 20),
+              Container(height:height/4,child:Expanded(
+                child: _selectedEvents != null && _selectedEvents!.isNotEmpty
+                    ? ListView.builder(
+                  padding: EdgeInsets.all(0.0),
+                  itemBuilder: (BuildContext context, int index) {
+                    final CleanCalendarEvent event = _selectedEvents![index];
+                    final String start =
+                        event.startTime;
+
+                    return Container(
+                      height: 50.0,
+                      child: InkWell(
+                        onTap: () {
+
+                        },
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            Expanded(
+                              flex: 5,
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Container(
+                                  color: event.color,
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 20,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(event.payType,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .subtitle2),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 25,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(event.mainCategory,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .subtitle2),
+
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 20,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(event.subCategory,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .subtitle2),
+
+                                  ],
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              flex: 30,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(NumberFormat.currency(locale: "ko_KR", symbol: "￦").format(event.money).toString(),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyText1),
+
+                                  ],
+                                ),
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                  itemCount: _selectedEvents!.length,
+                )
+                    : Container(),
+              )
+
+              )],)) :
+          Container(child:SettingsList(
+            sections: [
+              SettingsSection(
+                title: Text('개인 설정'),
+                tiles: <SettingsTile>[
+
+                  SettingsTile.navigation(
+                    leading: Icon(Icons.person),
+                    title: Text('프로필'),
+                    value: Text('Scott'),
+                  ),
+                  SettingsTile.switchTile(
+                    onToggle: (value) {},
+                    initialValue: false,
+                    leading: Icon(Icons.dark_mode),
+                    title: Text('Dark Mode'),
+                  ),
+                  SettingsTile.switchTile(
+                    onToggle: (value) {},
+                    initialValue: true,
+                    leading: Icon(Icons.backup_sharp),
+                    title: Text('자동 백업'),
+                  ),
+                ],
+              ),
+            ],
+          ),)
       ) ,
 
     );
   }
 
+  Widget _textField(final String hint, final TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, right: 20, top: 8.0),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          enabledBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: Color(0xffe7e7e7), width: 1.0)),
+          focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: Color(0xFF20bca4), width: 1.0)),
+          hintText: hint,
+          hintStyle: const TextStyle(color: Colors.grey),
+          isDense: true,
+        ),
+      ),
+    );
+  }
+
+  final TextEditingController dateController = TextEditingController();
+  final TextEditingController heatLevelController = TextEditingController();
+
+  bool isOpacityMode = true;
+
+
   @override
   void dispose() {
     super.dispose();
     _anchoredAdaptiveAd?.dispose();
+    dateController.dispose();
+    heatLevelController.dispose();
   }
 
   void _handleNewDate(date) {
