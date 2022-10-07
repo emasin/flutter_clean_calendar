@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="f198b425-b7f0-4909-8da2-57ded7dcae6a" name="변경" comment="[feature] 탭 구성">
+    <list default="true" id="f198b425-b7f0-4909-8da2-57ded7dcae6a" name="변경" comment="[feature] 탭 구성&#10;&#10;분석&#10;&#10;마이 &#10;&#10;관련 화면 추가">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/ios/Runner.xcodeproj/project.pbxproj" beforeDir="false" afterPath="$PROJECT_DIR$/example/ios/Runner.xcodeproj/project.pbxproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/example/lib/main.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/example/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/example/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/example/pubspec.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/flutter_clean_calendar.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/flutter_clean_calendar.dart" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -74,7 +74,7 @@
       <workItem from="1664839964019" duration="2272000" />
       <workItem from="1664891974458" duration="4420000" />
       <workItem from="1664982591903" duration="1914000" />
-      <workItem from="1665111655461" duration="8475000" />
+      <workItem from="1665111655461" duration="10472000" />
     </task>
     <task id="LOCAL-00001" summary="[feature] 탭 구성">
       <created>1665012865216</created>
@@ -83,7 +83,14 @@
       <option name="project" value="LOCAL" />
       <updated>1665012865216</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="[feature] 탭 구성&#10;&#10;분석&#10;&#10;마이 &#10;&#10;관련 화면 추가">
+      <created>1665124415870</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1665124415870</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="ToolWindowManager">
@@ -109,7 +116,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="init" />
     <MESSAGE value="[feature] 탭 구성" />
-    <option name="LAST_COMMIT_MESSAGE" value="[feature] 탭 구성" />
+    <MESSAGE value="[feature] 탭 구성&#10;&#10;분석&#10;&#10;마이 &#10;&#10;관련 화면 추가" />
+    <option name="LAST_COMMIT_MESSAGE" value="[feature] 탭 구성&#10;&#10;분석&#10;&#10;마이 &#10;&#10;관련 화면 추가" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

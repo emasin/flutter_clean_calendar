@@ -195,8 +195,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Widget build(BuildContext context) {
 
     double height = MediaQuery.of(context).size.height;
+    print(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day ));
+    print(_events);
     List<CleanCalendarEvent>? _selectedEvents = _events[DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day )];
-
+    print(_selectedEvents?.length);
     return Scaffold(
       appBar:AppBar(
         actions: [
@@ -213,8 +215,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
         child: _selectedIndex == 0 ? Stack(alignment: AlignmentDirectional.bottomCenter,
             children: <Widget>[
               Calendar(
-                startOnMonday: true,
-                weekDays: ['일', '월', '화', '수', '목', '금', '토'],
+                startOnMonday: false,
+                weekDays: ['월', '화', '수', '목', '금', '토', '일'],
                 events: _events,
                 isExpandable: true,
                 eventDoneColor: Colors.green,
@@ -282,7 +284,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 ),
               ),
               SizedBox(height: 20),
-              Container(height:height/4,child:Expanded(
+               Expanded(
                 child: _selectedEvents != null && _selectedEvents!.isNotEmpty
                     ? ListView.builder(
                   padding: EdgeInsets.all(0.0),
@@ -381,12 +383,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       ),
                     );
                   },
-                  itemCount: _selectedEvents!.length,
+                  itemCount: _selectedEvents?.length,
                 )
-                    : Container(),
+                    : Container(child:Text('none')),
               )
 
-              )],)) :
+              ],)) :
           Container(child:SettingsList(
             sections: [
               SettingsSection(
