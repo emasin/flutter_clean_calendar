@@ -1,459 +1,463 @@
-import 'package:finan_ledger/screens/create_new_task_page.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_clean_calendar/flutter_clean_calendar.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'dart:io';
-import 'package:settings_ui/settings_ui.dart';
-import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
-import 'package:intl/intl.dart';
-void main() {
-  WidgetsFlutterBinding.ensureInitialized();
-  MobileAds.instance.initialize();
-  runApp(MyApp());}
+  import 'package:finan_ledger/screens/create_new_task_page.dart';
+  import 'package:flutter/cupertino.dart';
+  import 'package:flutter/material.dart';
+  import 'package:flutter_clean_calendar/flutter_clean_calendar.dart';
+  import 'package:google_mobile_ads/google_mobile_ads.dart';
+  import 'dart:io';
+  import 'package:settings_ui/settings_ui.dart';
+  import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
+  import 'package:intl/intl.dart';
+  void main() {
+    WidgetsFlutterBinding.ensureInitialized();
+    MobileAds.instance.initialize();
+    runApp(MyApp());}
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Clean Calendar Demo',
-      home: CalendarScreen(),
-    );
-  }
-}
-
-class CalendarScreen extends StatefulWidget {
-  @override
-  State<StatefulWidget> createState() {
-    return _CalendarScreenState();
-  }
-}
-
-class _CalendarScreenState extends State<CalendarScreen> {
-
-
-  BannerAd? _anchoredAdaptiveAd;
-  bool _isLoaded = false;
-  late Orientation _currentOrientation;
-
-
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _currentOrientation = MediaQuery.of(context).orientation;
-    _loadAd();
+  class MyApp extends StatelessWidget {
+    // This widget is the root of your application.
+    @override
+    Widget build(BuildContext context) {
+      return MaterialApp(
+        title: 'Flutter Clean Calendar Demo',
+        home: CalendarScreen(),
+      );
+    }
   }
 
-  /// Load another ad, disposing of the current ad if there is one.
-  Future<void> _loadAd() async {
-    await _anchoredAdaptiveAd?.dispose();
-    setState(() {
-      _anchoredAdaptiveAd = null;
-      _isLoaded = false;
-    });
+  class CalendarScreen extends StatefulWidget {
+    @override
+    State<StatefulWidget> createState() {
+      return _CalendarScreenState();
+    }
+  }
 
-    final AnchoredAdaptiveBannerAdSize? size =
-    await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
-        MediaQuery.of(context).size.width.truncate());
+  class _CalendarScreenState extends State<CalendarScreen> {
 
-    if (size == null) {
-      print('Unable to get height of anchored banner.');
-      return;
+
+    BannerAd? _anchoredAdaptiveAd;
+    bool _isLoaded = false;
+    late Orientation _currentOrientation;
+    DateTime _selectedDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day );
+
+
+    @override
+    void didChangeDependencies() {
+      super.didChangeDependencies();
+      _currentOrientation = MediaQuery.of(context).orientation;
+      _loadAd();
     }
 
-    String adUnitId =  Platform.isAndroid
-        ? 'ca-app-pub-3940256099942544/6300978111'
-        : 'ca-app-pub-3940256099942544/2934735716';
+    /// Load another ad, disposing of the current ad if there is one.
+    Future<void> _loadAd() async {
+      await _anchoredAdaptiveAd?.dispose();
+      setState(() {
+        _anchoredAdaptiveAd = null;
+        _isLoaded = false;
+      });
+
+      final AnchoredAdaptiveBannerAdSize? size =
+      await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+          MediaQuery.of(context).size.width.truncate());
+
+      if (size == null) {
+        print('Unable to get height of anchored banner.');
+        return;
+      }
+
+      String adUnitId =  Platform.isAndroid
+          ? 'ca-app-pub-3940256099942544/6300978111'
+          : 'ca-app-pub-3940256099942544/2934735716';
 
 
 
-    _anchoredAdaptiveAd = BannerAd(
-      adUnitId: adUnitId,
-      size: size,
-      request: AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (Ad ad) {
-          print('$ad loaded: ${ad.responseInfo}');
-          setState(() {
-            // When the ad is loaded, get the ad size and use it to set
-            // the height of the ad container.
-            _anchoredAdaptiveAd = ad as BannerAd;
-            _isLoaded = true;
-          });
+      _anchoredAdaptiveAd = BannerAd(
+        adUnitId: adUnitId,
+        size: size,
+        request: AdRequest(),
+        listener: BannerAdListener(
+          onAdLoaded: (Ad ad) {
+            print('$ad loaded: ${ad.responseInfo}');
+            setState(() {
+              // When the ad is loaded, get the ad size and use it to set
+              // the height of the ad container.
+              _anchoredAdaptiveAd = ad as BannerAd;
+              _isLoaded = true;
+            });
+          },
+          onAdFailedToLoad: (Ad ad, LoadAdError error) {
+            print('Anchored adaptive banner failedToLoad: $error');
+            ad.dispose();
+          },
+        ),
+      );
+      return _anchoredAdaptiveAd!.load();
+    }
+
+
+    Widget _getAdWidget() {
+      return OrientationBuilder(
+        builder: (context, orientation) {
+          if (_currentOrientation == orientation &&
+              _anchoredAdaptiveAd != null &&
+              _isLoaded) {
+            return Container(
+              color: Colors.green,
+              width: _anchoredAdaptiveAd!.size.width.toDouble(),
+              height: _anchoredAdaptiveAd!.size.height.toDouble(),
+              child: AdWidget(ad: _anchoredAdaptiveAd!),
+            );
+          }
+          // Reload the ad if the orientation changes.
+          if (_currentOrientation != orientation) {
+            _currentOrientation = orientation;
+            _loadAd();
+          }
+          return Container();
         },
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          print('Anchored adaptive banner failedToLoad: $error');
-          ad.dispose();
-        },
-      ),
-    );
-    return _anchoredAdaptiveAd!.load();
-  }
+      );
+    }
 
 
-  Widget _getAdWidget() {
-    return OrientationBuilder(
-      builder: (context, orientation) {
-        if (_currentOrientation == orientation &&
-            _anchoredAdaptiveAd != null &&
-            _isLoaded) {
-          return Container(
-            color: Colors.green,
-            width: _anchoredAdaptiveAd!.size.width.toDouble(),
-            height: _anchoredAdaptiveAd!.size.height.toDouble(),
-            child: AdWidget(ad: _anchoredAdaptiveAd!),
-          );
+    final Map<DateTime, List<CleanCalendarEvent>> _events = {
+
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day - 3):
+          [
+        CleanCalendarEvent('수입','현급','용돈',90000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.blue),
+            CleanCalendarEvent('지출','현급','식비',12000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '점심'),
+            CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '출근'),
+            CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '퇴근'),
+      ],
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day - 2):
+      [
+        CleanCalendarEvent('수입','현급','용돈',90000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.blue),
+        CleanCalendarEvent('지출','현급','식비',12000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '점심'),
+        CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '출근'),
+        CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '퇴근'),
+        CleanCalendarEvent('수입','현급','용돈',90000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.blue),
+        CleanCalendarEvent('지출','현급','식비',12000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '점심'),
+        CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '출근'),
+        CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '퇴근'),
+        CleanCalendarEvent('지출','현급','식비',12000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '점심'),
+        CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '출근'),
+        CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '퇴근'),
+      ],
+      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day ):
+      [
+        CleanCalendarEvent('지출','카드','식비',4200,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '맥모닝'),
+        CleanCalendarEvent('지출','현급','식비',9800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '점심'),
+        CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '출근'),
+        CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '퇴근'),
+      ],
+    };
+
+    @override
+    void initState() {
+      super.initState();
+      // Force selection of today on first load, so that the list of today's events gets shown.
+      _handleNewDate(DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day));
+
+
+
+      for(final el in _events.keys){
+        print(el);
+        int tot = 0;
+        //heatMapDatasets[el] = _events[el]?.map((v2){ return tot += v2.money;}) as int;
+        for(final e in _events[el]!) {
+          tot += e.money;
         }
-        // Reload the ad if the orientation changes.
-        if (_currentOrientation != orientation) {
-          _currentOrientation = orientation;
-          _loadAd();
-        }
-        return Container();
-      },
-    );
-  }
+
+        heatMapDatasets[el] = tot;
 
 
-  final Map<DateTime, List<CleanCalendarEvent>> _events = {
-
-    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day - 3):
-        [
-      CleanCalendarEvent('수입','현급','용돈',90000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.blue),
-          CleanCalendarEvent('지출','현급','식비',12000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '점심'),
-          CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '출근'),
-          CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '퇴근'),
-    ],
-    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day - 2):
-    [
-      CleanCalendarEvent('수입','현급','용돈',90000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.blue),
-      CleanCalendarEvent('지출','현급','식비',12000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '점심'),
-      CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '출근'),
-      CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '퇴근'),
-      CleanCalendarEvent('수입','현급','용돈',90000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.blue),
-      CleanCalendarEvent('지출','현급','식비',12000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '점심'),
-      CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '출근'),
-      CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '퇴근'),
-      CleanCalendarEvent('지출','현급','식비',12000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '점심'),
-      CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '출근'),
-      CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '퇴근'),
-    ],
-    DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day ):
-    [
-      CleanCalendarEvent('지출','카드','식비',4200,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '맥모닝'),
-      CleanCalendarEvent('지출','현급','식비',9800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '점심'),
-      CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '출근'),
-      CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '퇴근'),
-    ],
-  };
-
-  @override
-  void initState() {
-    super.initState();
-    // Force selection of today on first load, so that the list of today's events gets shown.
-    _handleNewDate(DateTime(
-        DateTime.now().year, DateTime.now().month, DateTime.now().day));
-
-    heatMapDatasets[DateTime.parse('${DateFormat('yyyy-MM-dd').format(DateTime.now().add(const Duration(days: 2)))}')] =
-        10000;
-    heatMapDatasets[DateTime.parse('${DateFormat('yyyy-MM-dd').format(DateTime.now().add(const Duration(days: 3)))}')] =
-    110000;
-
-    heatMapDatasets[DateTime.parse('${DateFormat('yyyy-MM-dd').format(DateTime.now().add(const Duration(days: -2)))}')] =
-    60000;
-
-    heatMapDatasets[DateTime.parse('${DateFormat('yyyy-MM-dd').format(DateTime.now().add(const Duration(days: 15)))}')] =
-    60000;
-
-    heatMapDatasets[DateTime.parse('${DateFormat('yyyy-MM-dd').format(DateTime.now().add(const Duration(days: 4)))}')] =
-    10000;
-    heatMapDatasets[DateTime.parse('${DateFormat('yyyy-MM-dd').format(DateTime.now().add(const Duration(days: 5)))}')] =
-    110000;
-
-    heatMapDatasets[DateTime.parse('${DateFormat('yyyy-MM-dd').format(DateTime.now().add(const Duration(days: -1)))}')] =
-    60000;
-
-    heatMapDatasets[DateTime.parse('${DateFormat('yyyy-MM-dd').format(DateTime.now().add(const Duration(days: 10)))}')] =
-    60000;
+      }
 
 
-  }
-  int _selectedIndex = 0;
+    }
+    int _selectedIndex = 0;
 
-  void setSelectedIndex(int s) {
-    setState(() {
-      this._selectedIndex = s;
-    });
-  }
+    void setSelectedIndex(int s) {
+      setState(() {
+        this._selectedIndex = s;
+      });
+    }
 
-  Map<DateTime, int> heatMapDatasets = {};
+    Map<DateTime, int> heatMapDatasets = {};
 
 
-  @override
-  Widget build(BuildContext context) {
+    @override
+    Widget build(BuildContext context) {
 
-    double height = MediaQuery.of(context).size.height;
-    print(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day ));
-    print(_events);
-    List<CleanCalendarEvent>? _selectedEvents = _events[DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day )];
-    print(_selectedEvents?.length);
-    return Scaffold(
-      appBar:AppBar(
-        actions: [
-          GestureDetector(onTap:()=>{this.setSelectedIndex(0)},child:Icon(Icons.calendar_month,color:_selectedIndex == 0 ? Colors.cyanAccent:Colors.white)),
-          SizedBox(width:10),
-          GestureDetector(onTap:()=>{this.setSelectedIndex(1)},child:Icon(Icons.area_chart,color:_selectedIndex == 1 ? Colors.cyanAccent:Colors.white)),
-          SizedBox(width:10),
-          GestureDetector(onTap:()=>{this.setSelectedIndex(2)},child:Icon(Icons.person,color:_selectedIndex == 2 ? Colors.cyanAccent:Colors.white)),
-          SizedBox(width:15)
-        ],
-      ),
-      body: SafeArea(
+        List<CleanCalendarEvent>? _selectedEvents  = _events[_selectedDate];
 
-        child: _selectedIndex == 0 ? Stack(alignment: AlignmentDirectional.bottomCenter,
-            children: <Widget>[
-              Calendar(
-                startOnMonday: false,
-                weekDays: ['월', '화', '수', '목', '금', '토', '일'],
-                events: _events,
-                isExpandable: true,
-                eventDoneColor: Colors.green,
-                selectedColor: Colors.pink,
-                todayColor: Colors.blue,
-                eventColor: Colors.grey,
-                hideTodayIcon:true,
-                locale: 'ko_KR',
-                todayButtonText: 'Heute',
-                isExpanded: true,
-                expandableDateFormat: 'EEEE, dd. MMMM yyyy',
-                dayOfWeekStyle: TextStyle(
-                    color: Colors.black, fontWeight: FontWeight.w800, fontSize: 11),
-              ),
+      double height = MediaQuery.of(context).size.height;
+      //print(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day ));
 
-              new Positioned(
-                  bottom: 80.0,
-                  right: 10.0,
 
-                  child: FloatingActionButton(
-                    key: UniqueKey() ,
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CreateNewTaskPage(),
+
+      return Scaffold(
+        appBar:AppBar(
+          actions: [
+            GestureDetector(onTap:()=>{this.setSelectedIndex(0)},child:Icon(Icons.calendar_month,color:_selectedIndex == 0 ? Colors.cyanAccent:Colors.white)),
+            SizedBox(width:10),
+            GestureDetector(onTap:()=>{this.setSelectedIndex(1)},child:Icon(Icons.area_chart,color:_selectedIndex == 1 ? Colors.cyanAccent:Colors.white)),
+            SizedBox(width:10),
+            GestureDetector(onTap:()=>{this.setSelectedIndex(2)},child:Icon(Icons.person,color:_selectedIndex == 2 ? Colors.cyanAccent:Colors.white)),
+            SizedBox(width:15)
+          ],
+        ),
+        body: SafeArea(
+
+          child: _selectedIndex == 0 ? Stack(alignment: AlignmentDirectional.bottomCenter,
+              children: <Widget>[
+                Calendar(
+                  startOnMonday: false,
+                  weekDays: [ '일', '월', '화', '수', '목', '금', '토'],
+                  events: _events,
+                  isExpandable: true,
+                  eventDoneColor: Colors.green,
+                  selectedColor: Colors.pink,
+                  todayColor: Colors.blue,
+                  eventColor: Colors.grey,
+                  hideTodayIcon:true,
+                  locale: 'ko_KR',
+                  todayButtonText: '오늘',
+                  isExpanded: false,
+                  expandableDateFormat: 'yyyy년 MM월 dd일 , EEEE',
+                  dayOfWeekStyle: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.w800, fontSize: 11),
+                ),
+
+                new Positioned(
+                    bottom: 80.0,
+                    right: 10.0,
+
+                    child: FloatingActionButton(
+                      key: UniqueKey() ,
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CreateNewTaskPage(),
+                          ),
+                        );
+                      },
+                      child: Icon(Icons.add),
+                      mini: true,
+                      elevation: 10,
+
+
+                    )
+                ),
+
+
+                _getAdWidget()
+              ]): _selectedIndex == 1 ?
+            Container(child: Column(
+              children: [
+                Card(
+                  margin: const EdgeInsets.all(5),
+                  elevation: 10,
+                  child: Padding(
+                    padding: const EdgeInsets.all(5),
+
+                    // HeatMapCalendar
+                    child: HeatMapCalendar(
+                      onClick:(d){
+                        print('+++++++++ $d');
+                        print('--------- $_selectedDate');
+                        setState(() {
+
+                          _selectedDate = d;
+                          //print(_selectedEvents);
+                        });
+                        },
+                      flexible: true,
+                      datasets: heatMapDatasets,
+                      colorMode:
+                      isOpacityMode ? ColorMode.opacity : ColorMode.color,
+                      colorsets: const {
+                        1: Colors.red,
+                        3: Colors.orange,
+                        5: Colors.yellow,
+                        7: Colors.green,
+                        9: Colors.blue,
+                        11: Colors.indigo,
+                        13: Colors.purple,
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20),
+                 Expanded(
+                  child: _selectedEvents != null && _selectedEvents!.isNotEmpty
+                      ? ListView.builder(
+                    padding: EdgeInsets.all(0.0),
+                    itemBuilder: (BuildContext context, int index) {
+                      final CleanCalendarEvent event = _selectedEvents![index];
+                      final String start =
+                          event.startTime;
+
+                      return Container(
+                        height: 50.0,
+                        child: InkWell(
+                          onTap: () {
+
+                          },
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              Expanded(
+                                flex: 5,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(4.0),
+                                  child: Container(
+                                    color: event.color,
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 20,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(event.payType,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .subtitle2),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 25,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(event.mainCategory,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .subtitle2),
+
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 20,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(event.subCategory,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .subtitle2),
+
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                flex: 30,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(NumberFormat.currency(locale: "ko_KR", symbol: "￦").format(event.money).toString(),
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .bodyText1),
+
+                                    ],
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       );
                     },
-                    child: Icon(Icons.add),
-                    mini: true,
-                    elevation: 10,
-
-
+                    itemCount: _selectedEvents?.length,
                   )
-              ),
-
-
-              _getAdWidget()
-            ]): _selectedIndex == 1 ?
-          Container(child: Column(
-            children: [
-              Card(
-                margin: const EdgeInsets.all(5),
-                elevation: 10,
-                child: Padding(
-                  padding: const EdgeInsets.all(5),
-
-                  // HeatMapCalendar
-                  child: HeatMapCalendar(
-                    flexible: true,
-                    datasets: heatMapDatasets,
-                    colorMode:
-                    isOpacityMode ? ColorMode.opacity : ColorMode.color,
-                    colorsets: const {
-                      1: Colors.red,
-                      3: Colors.orange,
-                      5: Colors.yellow,
-                      7: Colors.green,
-                      9: Colors.blue,
-                      11: Colors.indigo,
-                      13: Colors.purple,
-                    },
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
-               Expanded(
-                child: _selectedEvents != null && _selectedEvents!.isNotEmpty
-                    ? ListView.builder(
-                  padding: EdgeInsets.all(0.0),
-                  itemBuilder: (BuildContext context, int index) {
-                    final CleanCalendarEvent event = _selectedEvents![index];
-                    final String start =
-                        event.startTime;
-
-                    return Container(
-                      height: 50.0,
-                      child: InkWell(
-                        onTap: () {
-
-                        },
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: <Widget>[
-                            Expanded(
-                              flex: 5,
-                              child: Padding(
-                                padding: const EdgeInsets.all(4.0),
-                                child: Container(
-                                  color: event.color,
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 20,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(event.payType,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .subtitle2),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 25,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(event.mainCategory,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .subtitle2),
-
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 20,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(event.subCategory,
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .subtitle2),
-
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Expanded(
-                              flex: 30,
-                              child: Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(NumberFormat.currency(locale: "ko_KR", symbol: "￦").format(event.money).toString(),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyText1),
-
-                                  ],
-                                ),
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                  itemCount: _selectedEvents?.length,
+                      : Container(child:Text('none')),
                 )
-                    : Container(child:Text('none')),
-              )
 
-              ],)) :
-          Container(child:SettingsList(
-            sections: [
-              SettingsSection(
-                title: Text('개인 설정'),
-                tiles: <SettingsTile>[
+                ],)) :
+            Container(child:SettingsList(
+              sections: [
+                SettingsSection(
+                  title: Text('개인 설정'),
+                  tiles: <SettingsTile>[
 
-                  SettingsTile.navigation(
-                    leading: Icon(Icons.person),
-                    title: Text('프로필'),
-                    value: Text('Scott'),
-                  ),
-                  SettingsTile.switchTile(
-                    onToggle: (value) {},
-                    initialValue: false,
-                    leading: Icon(Icons.dark_mode),
-                    title: Text('Dark Mode'),
-                  ),
-                  SettingsTile.switchTile(
-                    onToggle: (value) {},
-                    initialValue: true,
-                    leading: Icon(Icons.backup_sharp),
-                    title: Text('자동 백업'),
-                  ),
-                ],
-              ),
-            ],
-          ),)
-      ) ,
+                    SettingsTile.navigation(
+                      leading: Icon(Icons.person),
+                      title: Text('프로필'),
+                      value: Text('Scott'),
+                    ),
+                    SettingsTile.switchTile(
+                      onToggle: (value) {},
+                      initialValue: false,
+                      leading: Icon(Icons.dark_mode),
+                      title: Text('Dark Mode'),
+                    ),
+                    SettingsTile.switchTile(
+                      onToggle: (value) {},
+                      initialValue: true,
+                      leading: Icon(Icons.backup_sharp),
+                      title: Text('자동 백업'),
+                    ),
+                  ],
+                ),
+              ],
+            ),)
+        ) ,
 
-    );
-  }
+      );
+    }
 
-  Widget _textField(final String hint, final TextEditingController controller) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 20, top: 8.0),
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          enabledBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xffe7e7e7), width: 1.0)),
-          focusedBorder: const OutlineInputBorder(
-              borderSide: BorderSide(color: Color(0xFF20bca4), width: 1.0)),
-          hintText: hint,
-          hintStyle: const TextStyle(color: Colors.grey),
-          isDense: true,
+    Widget _textField(final String hint, final TextEditingController controller) {
+      return Padding(
+        padding: const EdgeInsets.only(left: 16, right: 20, top: 8.0),
+        child: TextField(
+          controller: controller,
+          decoration: InputDecoration(
+            enabledBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Color(0xffe7e7e7), width: 1.0)),
+            focusedBorder: const OutlineInputBorder(
+                borderSide: BorderSide(color: Color(0xFF20bca4), width: 1.0)),
+            hintText: hint,
+            hintStyle: const TextStyle(color: Colors.grey),
+            isDense: true,
+          ),
         ),
-      ),
-    );
+      );
+    }
+
+    final TextEditingController dateController = TextEditingController();
+    final TextEditingController heatLevelController = TextEditingController();
+
+    bool isOpacityMode = true;
+
+
+    @override
+    void dispose() {
+      super.dispose();
+      _anchoredAdaptiveAd?.dispose();
+      dateController.dispose();
+      heatLevelController.dispose();
+    }
+
+    void _handleNewDate(date) {
+      print('Date selected: $date');
+    }
   }
-
-  final TextEditingController dateController = TextEditingController();
-  final TextEditingController heatLevelController = TextEditingController();
-
-  bool isOpacityMode = true;
-
-
-  @override
-  void dispose() {
-    super.dispose();
-    _anchoredAdaptiveAd?.dispose();
-    dateController.dispose();
-    heatLevelController.dispose();
-  }
-
-  void _handleNewDate(date) {
-    print('Date selected: $date');
-  }
-}
