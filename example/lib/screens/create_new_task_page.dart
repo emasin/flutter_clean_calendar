@@ -34,7 +34,7 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
 
   void printBox(){
     final cats =  _box.values;
-    print('box $cats');
+
   }
   @override
   Widget build(BuildContext context) {

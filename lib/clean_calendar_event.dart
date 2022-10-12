@@ -34,7 +34,7 @@ class CleanCalendarEvent {
        });
 
 
-  CleanCalendarEvent.fromJson(Map<String, dynamic> json)
+  CleanCalendarEvent.fromJson(Map<dynamic, dynamic> json)
       : mainType = json['mainType'],
         payType = json['payType'],
         mainCategory = json['mainCategory'],

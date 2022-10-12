@@ -4,6 +4,7 @@
   import 'package:flutter_clean_calendar/flutter_clean_calendar.dart';
   import 'package:google_mobile_ads/google_mobile_ads.dart';
   import 'dart:io';
+  import 'dart:convert';
   import 'package:settings_ui/settings_ui.dart';
   import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
   import 'package:intl/intl.dart';
@@ -119,43 +120,38 @@
         },
       );
     }
+    late Box _box;
 
+    late Map<DateTime, List<CleanCalendarEvent>> _events = {
 
-    final Map<DateTime, List<CleanCalendarEvent>> _events = {
-
-      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day - 3):
-          [
-        CleanCalendarEvent('수입','현급','용돈',90000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.blue),
-            CleanCalendarEvent('지출','현급','식비',12000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '점심'),
-            CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '출근'),
-            CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '퇴근'),
-      ],
-      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day - 2):
-      [
-        CleanCalendarEvent('수입','현급','용돈',90000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.blue),
-        CleanCalendarEvent('지출','현급','식비',12000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '점심'),
-        CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '출근'),
-        CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '퇴근'),
-        CleanCalendarEvent('수입','현급','용돈',90000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.blue),
-        CleanCalendarEvent('지출','현급','식비',12000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '점심'),
-        CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '출근'),
-        CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '퇴근'),
-        CleanCalendarEvent('지출','현급','식비',12000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '점심'),
-        CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '출근'),
-        CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '퇴근'),
-      ],
-      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day ):
-      [
-        CleanCalendarEvent('지출','카드','식비',4200,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '맥모닝'),
-        CleanCalendarEvent('지출','현급','식비',9800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '점심'),
-        CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '출근'),
-        CleanCalendarEvent('지출','카드','교통비',2800,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.red,subCategory: '퇴근'),
-      ],
     };
 
     @override
     void initState() {
       super.initState();
+      _box = Hive.box('myBox');
+
+      var a = _box?.keys;
+      if(a != null) {
+        for(final d in a){
+         // _events[DateTime.parse(d)] = [];
+          List<CleanCalendarEvent> c = [];
+          for(final e in _box?.get(d)){
+            print('$d $e');
+            //var b = _events[DateTime.parse(d)];
+            //b?.add(e);
+            print(e.toString());
+
+
+            c.add(CleanCalendarEvent.fromJson(e));
+
+          }
+          _events[DateTime.parse(d)] = c;
+
+          //_events[DateTime(d)] = CleanCalendarEvent.fromJson(json);
+        }
+      }
+
       // Force selection of today on first load, so that the list of today's events gets shown.
       _handleNewDate(DateTime(
           DateTime.now().year, DateTime.now().month, DateTime.now().day));
