@@ -32,4 +32,35 @@ class CleanCalendarEvent {
         this.location = '',
         this.color = Colors.blue,
        });
+
+
+  CleanCalendarEvent.fromJson(Map<String, dynamic> json)
+      : mainType = json['mainType'],
+        payType = json['payType'],
+        mainCategory = json['mainCategory'],
+        money = json['money'],
+        startTime = json['startTime'],
+        subCategory = json['subCategory'],
+        description = json['description'],
+        summary = json['summary'],
+        location = json['location'],
+        color = json['color'] == 1 ? Colors.blue : Colors.red
+
+  ;
+
+  Map<String, dynamic> toJson() => {
+    'mainType': mainType,
+    'payType' : payType,
+    'mainCategory': mainCategory,
+    'money' : money,
+    'startTime' :startTime,
+    'subCategory' :subCategory,
+    'description' :description,
+    'summary' :summary,
+    'location' :location,
+    'color' :color == Colors.blue ? 1 : 2
+  };
+
+
+
 }

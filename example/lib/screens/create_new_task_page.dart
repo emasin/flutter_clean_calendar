@@ -3,6 +3,7 @@ import 'package:finan_ledger/theme/colors/light_colors.dart';
 import 'package:finan_ledger/widgets/top_container.dart';
 import 'package:finan_ledger/widgets/back_button.dart';
 import 'package:finan_ledger/widgets/my_text_field.dart';
+import 'package:flutter_clean_calendar/clean_calendar_event.dart';
 import 'package:intl/intl.dart';
 import 'package:hive/hive.dart';
 
@@ -27,12 +28,19 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
   void initState() {
     super.initState();
     _box = Hive.box('myBox');
+
   }
 
 
-
+  void printBox(){
+    final cats =  _box.values;
+    print('box $cats');
+  }
   @override
   Widget build(BuildContext context) {
+
+
+
     double width = MediaQuery.of(context).size.width;
     var downwardIcon = Icon(
       Icons.keyboard_arrow_down,
@@ -178,7 +186,18 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
               width: width,
               child: GestureDetector(
                 onTap:(){
-                  _box?.put('counter', {"name":1});
+                  printBox();
+                  var a = _box?.get(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day ).toString());
+                  if(a != null ) {
+                    a.add(CleanCalendarEvent('수입','현급','용돈',90000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.blue).toJson());
+                    _box?.put(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day ).toString(), a);
+                  }else {
+                    _box?.put(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day ).toString(), [CleanCalendarEvent('수입','현급','용돈',90000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.blue).toJson()]);
+                  }
+
+
+
+
                 },
                 child:Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,

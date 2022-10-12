@@ -12,7 +12,8 @@
   Future<void> main() async {
     WidgetsFlutterBinding.ensureInitialized();
     MobileAds.instance.initialize();
-    await Hive.initFlutter();// var box = await Hive.openBox('testBox');
+    await Hive.initFlutter();// var box =
+    await Hive.openBox('myBox');
     runApp(MyApp());}
 
   class MyApp extends StatelessWidget {
