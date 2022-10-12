@@ -4,8 +4,33 @@ import 'package:finan_ledger/widgets/top_container.dart';
 import 'package:finan_ledger/widgets/back_button.dart';
 import 'package:finan_ledger/widgets/my_text_field.dart';
 import 'package:intl/intl.dart';
+import 'package:hive/hive.dart';
 
-class CreateNewTaskPage extends StatelessWidget {
+
+
+class CreateNewTaskPage extends StatefulWidget {
+  const CreateNewTaskPage();
+
+
+  @override
+  _CreateNewTaskPageState createState() => _CreateNewTaskPageState();
+}
+
+
+
+class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
+
+  late Box _box;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _box = Hive.box('myBox');
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
@@ -151,7 +176,11 @@ class CreateNewTaskPage extends StatelessWidget {
             Container(
               height: 80,
               width: width,
-              child: Row(
+              child: GestureDetector(
+                onTap:(){
+                  _box?.put('counter', {"name":1});
+                },
+                child:Row(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: <Widget>[
                   Container(
@@ -171,7 +200,7 @@ class CreateNewTaskPage extends StatelessWidget {
                     ),
                   ),
                 ],
-              ),
+              ),)
             ),
           ],
         ),

@@ -7,9 +7,12 @@
   import 'package:settings_ui/settings_ui.dart';
   import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
   import 'package:intl/intl.dart';
-  void main() {
+  import 'package:hive_flutter/hive_flutter.dart';
+
+  Future<void> main() async {
     WidgetsFlutterBinding.ensureInitialized();
     MobileAds.instance.initialize();
+    await Hive.initFlutter();// var box = await Hive.openBox('testBox');
     runApp(MyApp());}
 
   class MyApp extends StatelessWidget {
