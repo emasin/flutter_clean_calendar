@@ -67,7 +67,7 @@ class Range {
 /// [bottomBarColor] sets the [Color] of the bottom bar
 /// [expandableDateFormat] defines the formatting of the date in the bottom bar
 class Calendar extends StatefulWidget {
-  final ValueChanged<DateTime>? onDateSelected;
+    final ValueChanged<DateTime>? onDateSelected;
   final ValueChanged<DateTime>? onMonthChanged;
   final ValueChanged<bool>? onExpandStateChanged;
   final ValueChanged? onRangeSelected;

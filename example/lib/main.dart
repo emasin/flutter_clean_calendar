@@ -126,21 +126,13 @@
 
     };
 
-    @override
-    void initState() {
-      super.initState();
-      _box = Hive.box('myBox');
-
+    void loadData() {
       var a = _box?.keys;
       if(a != null) {
         for(final d in a){
-         // _events[DateTime.parse(d)] = [];
+          // _events[DateTime.parse(d)] = [];
           List<CleanCalendarEvent> c = [];
           for(final e in _box?.get(d)){
-            print('$d $e');
-            //var b = _events[DateTime.parse(d)];
-            //b?.add(e);
-            print(e.toString());
 
 
             c.add(CleanCalendarEvent.fromJson(e));
@@ -148,14 +140,8 @@
           }
           _events[DateTime.parse(d)] = c;
 
-          //_events[DateTime(d)] = CleanCalendarEvent.fromJson(json);
         }
       }
-
-      // Force selection of today on first load, so that the list of today's events gets shown.
-      _handleNewDate(DateTime(
-          DateTime.now().year, DateTime.now().month, DateTime.now().day));
-
 
 
       for(final el in _events.keys){
@@ -170,6 +156,27 @@
 
 
       }
+      this.setState(() {
+        _selectedEvents  = _events[_selectedDate];
+      });
+
+
+    }
+
+    @override
+    void initState() {
+      super.initState();
+      future = Future.value(0);
+      _box = Hive.box('myBox');
+
+      loadData();
+
+      // Force selection of today on first load, so that the list of today's events gets shown.
+      _handleNewDate(DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day));
+
+
+
 
 
     }
@@ -184,245 +191,260 @@
     Map<DateTime, int> heatMapDatasets = {};
 
 
+    List<CleanCalendarEvent>? _selectedEvents;
+
+    Future<int>? future;
     @override
     Widget build(BuildContext context) {
+      //_selectedEvents  = _events[_selectedDate];
 
-        List<CleanCalendarEvent>? _selectedEvents  = _events[_selectedDate];
 
       double height = MediaQuery.of(context).size.height;
       //print(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day ));
 
 
 
-      return Scaffold(
-        appBar:AppBar(
-          actions: [
-            GestureDetector(onTap:()=>{this.setSelectedIndex(0)},child:Icon(Icons.calendar_month,color:_selectedIndex == 0 ? Colors.cyanAccent:Colors.white)),
-            SizedBox(width:10),
-            GestureDetector(onTap:()=>{this.setSelectedIndex(1)},child:Icon(Icons.area_chart,color:_selectedIndex == 1 ? Colors.cyanAccent:Colors.white)),
-            SizedBox(width:10),
-            GestureDetector(onTap:()=>{this.setSelectedIndex(2)},child:Icon(Icons.person,color:_selectedIndex == 2 ? Colors.cyanAccent:Colors.white)),
-            SizedBox(width:15)
-          ],
-        ),
-        body: SafeArea(
+      return FutureBuilder(future: future, builder: (BuildContext context, AsyncSnapshot<int> snapshot) {
+        print('FutureBuilder');
+        return Scaffold(
+          appBar:AppBar(
+            actions: [
+              GestureDetector(onTap:()=>{this.setSelectedIndex(0)},child:Icon(Icons.calendar_month,color:_selectedIndex == 0 ? Colors.cyanAccent:Colors.white)),
+              SizedBox(width:10),
+              GestureDetector(onTap:()=>{this.setSelectedIndex(1)},child:Icon(Icons.area_chart,color:_selectedIndex == 1 ? Colors.cyanAccent:Colors.white)),
+              SizedBox(width:10),
+              GestureDetector(onTap:()=>{this.setSelectedIndex(2)},child:Icon(Icons.person,color:_selectedIndex == 2 ? Colors.cyanAccent:Colors.white)),
+              SizedBox(width:15)
+            ],
+          ),
+          body: SafeArea(
 
-          child: _selectedIndex == 0 ? Stack(alignment: AlignmentDirectional.bottomCenter,
-              children: <Widget>[
-                Calendar(
-                  startOnMonday: false,
-                  weekDays: [ '일', '월', '화', '수', '목', '금', '토'],
-                  events: _events,
-                  isExpandable: true,
-                  eventDoneColor: Colors.green,
-                  selectedColor: Colors.pink,
-                  todayColor: Colors.blue,
-                  eventColor: Colors.grey,
-                  hideTodayIcon:true,
-                  locale: 'ko_KR',
-                  todayButtonText: '오늘',
-                  isExpanded: false,
-                  expandableDateFormat: 'yyyy년 MM월 dd일 , EEEE',
-                  dayOfWeekStyle: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.w800, fontSize: 11),
-                ),
+              child: _selectedIndex == 0 ? Stack(alignment: AlignmentDirectional.bottomCenter,
+                  children: <Widget>[
+                    Calendar(
+                      startOnMonday: false,
+                      weekDays: [ '일', '월', '화', '수', '목', '금', '토'],
+                      events: _events,
+                      isExpandable: true,
+                      eventDoneColor: Colors.green,
+                      selectedColor: Colors.pink,
+                      todayColor: Colors.blue,
+                      eventColor: Colors.grey,
+                      hideTodayIcon:true,
+                      locale: 'ko_KR',
+                      todayButtonText: '오늘',
+                      isExpanded: false,
+                      expandableDateFormat: 'yyyy년 MM월 dd일 , EEEE',
+                      dayOfWeekStyle: TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.w800, fontSize: 11),
+                    ),
 
-                new Positioned(
-                    bottom: 80.0,
-                    right: 10.0,
+                    new Positioned(
+                        bottom: 80.0,
+                        right: 10.0,
 
-                    child: FloatingActionButton(
-                      key: UniqueKey() ,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CreateNewTaskPage(),
+                        child: FloatingActionButton(
+                          key: UniqueKey() ,
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CreateNewTaskPage(showSnackBar),
+                              ),
+                            );
+                          },
+                          child: Icon(Icons.add),
+                          mini: true,
+                          elevation: 10,
+
+
+                        )
+                    ),
+
+
+                    _getAdWidget()
+                  ]): _selectedIndex == 1 ?
+              Container(child: Column(
+                children: [
+                  Card(
+                    margin: const EdgeInsets.all(5),
+                    elevation: 10,
+                    child: Padding(
+                      padding: const EdgeInsets.all(5),
+
+                      // HeatMapCalendar
+                      child: HeatMapCalendar(
+                        onClick:(d){
+                          print('+++++++++ $d');
+                          print('--------- $_selectedDate');
+                          setState(() {
+
+                            _selectedDate = d;
+                            //print(_selectedEvents);
+                          });
+                        },
+                        flexible: true,
+                        datasets: heatMapDatasets,
+                        colorMode:
+                        isOpacityMode ? ColorMode.opacity : ColorMode.color,
+                        colorsets: const {
+                          1: Colors.red,
+                          3: Colors.orange,
+                          5: Colors.yellow,
+                          7: Colors.green,
+                          9: Colors.blue,
+                          11: Colors.indigo,
+                          13: Colors.purple,
+                        },
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Expanded(
+                    child: _selectedEvents != null && _selectedEvents!.isNotEmpty
+                        ? ListView.builder(
+                      padding: EdgeInsets.all(0.0),
+                      itemBuilder: (BuildContext context, int index) {
+                        final CleanCalendarEvent event = _selectedEvents![index];
+                        final String start =
+                            event.startTime;
+
+                        return Container(
+                          height: 50.0,
+                          child: InkWell(
+                            onTap: () {
+
+                            },
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                Expanded(
+                                  flex: 5,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(4.0),
+                                    child: Container(
+                                      color: event.color,
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 20,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(event.payType,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .subtitle2),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 25,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(event.mainCategory,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .subtitle2),
+
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 20,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(event.subCategory,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .subtitle2),
+
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  flex: 30,
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(NumberFormat.currency(locale: "ko_KR", symbol: "￦").format(event.money).toString(),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyText1),
+
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
                           ),
                         );
                       },
-                      child: Icon(Icons.add),
-                      mini: true,
-                      elevation: 10,
-
-
+                      itemCount: _selectedEvents?.length,
                     )
-                ),
-
-
-                _getAdWidget()
-              ]): _selectedIndex == 1 ?
-            Container(child: Column(
-              children: [
-                Card(
-                  margin: const EdgeInsets.all(5),
-                  elevation: 10,
-                  child: Padding(
-                    padding: const EdgeInsets.all(5),
-
-                    // HeatMapCalendar
-                    child: HeatMapCalendar(
-                      onClick:(d){
-                        print('+++++++++ $d');
-                        print('--------- $_selectedDate');
-                        setState(() {
-
-                          _selectedDate = d;
-                          //print(_selectedEvents);
-                        });
-                        },
-                      flexible: true,
-                      datasets: heatMapDatasets,
-                      colorMode:
-                      isOpacityMode ? ColorMode.opacity : ColorMode.color,
-                      colorsets: const {
-                        1: Colors.red,
-                        3: Colors.orange,
-                        5: Colors.yellow,
-                        7: Colors.green,
-                        9: Colors.blue,
-                        11: Colors.indigo,
-                        13: Colors.purple,
-                      },
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20),
-                 Expanded(
-                  child: _selectedEvents != null && _selectedEvents!.isNotEmpty
-                      ? ListView.builder(
-                    padding: EdgeInsets.all(0.0),
-                    itemBuilder: (BuildContext context, int index) {
-                      final CleanCalendarEvent event = _selectedEvents![index];
-                      final String start =
-                          event.startTime;
-
-                      return Container(
-                        height: 50.0,
-                        child: InkWell(
-                          onTap: () {
-
-                          },
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Expanded(
-                                flex: 5,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(4.0),
-                                  child: Container(
-                                    color: event.color,
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 20,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(event.payType,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .subtitle2),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 25,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(event.mainCategory,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .subtitle2),
-
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 20,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(event.subCategory,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .subtitle2),
-
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Expanded(
-                                flex: 30,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(NumberFormat.currency(locale: "ko_KR", symbol: "￦").format(event.money).toString(),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyText1),
-
-                                    ],
-                                  ),
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                    itemCount: _selectedEvents?.length,
+                        : Container(child:Text('none')),
                   )
-                      : Container(child:Text('none')),
-                )
 
                 ],)) :
-            Container(child:SettingsList(
-              sections: [
-                SettingsSection(
-                  title: Text('개인 설정'),
-                  tiles: <SettingsTile>[
+              Container(child:SettingsList(
+                sections: [
+                  SettingsSection(
+                    title: Text('개인 설정'),
+                    tiles: <SettingsTile>[
 
-                    SettingsTile.navigation(
-                      leading: Icon(Icons.person),
-                      title: Text('프로필'),
-                      value: Text('Scott'),
-                    ),
-                    SettingsTile.switchTile(
-                      onToggle: (value) {},
-                      initialValue: false,
-                      leading: Icon(Icons.dark_mode),
-                      title: Text('Dark Mode'),
-                    ),
-                    SettingsTile.switchTile(
-                      onToggle: (value) {},
-                      initialValue: true,
-                      leading: Icon(Icons.backup_sharp),
-                      title: Text('자동 백업'),
-                    ),
-                  ],
-                ),
-              ],
-            ),)
-        ) ,
+                      SettingsTile.navigation(
+                        leading: Icon(Icons.person),
+                        title: Text('프로필'),
+                        value: Text('Scott'),
+                      ),
+                      SettingsTile.switchTile(
+                        onToggle: (value) {},
+                        initialValue: false,
+                        leading: Icon(Icons.dark_mode),
+                        title: Text('Dark Mode'),
+                      ),
+                      SettingsTile.switchTile(
+                        onToggle: (value) {},
+                        initialValue: true,
+                        leading: Icon(Icons.backup_sharp),
+                        title: Text('자동 백업'),
+                      ),
+                      SettingsTile.switchTile(
+                        onToggle: (value) {
+                          print('clear');
+                          Hive.box('myBox').clear();
+                        },
+                        initialValue: true,
+                        leading: Icon(Icons.backup_sharp),
+                        title: Text('초기화'),
+                      ),
+                    ],
+                  ),
+                ],
+              ),)
+          ) ,
 
-      );
+        );
+      },) ;
     }
 
     Widget _textField(final String hint, final TextEditingController controller) {
@@ -455,6 +477,19 @@
       _anchoredAdaptiveAd?.dispose();
       dateController.dispose();
       heatLevelController.dispose();
+    }
+
+
+    void showSnackBar(String label) {
+      loadData();
+      future = Future.value(1);
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 1),
+          content: Text(label),
+        ),
+      );
     }
 
     void _handleNewDate(date) {

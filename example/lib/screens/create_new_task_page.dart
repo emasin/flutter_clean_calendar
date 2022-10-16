@@ -8,10 +8,10 @@ import 'package:intl/intl.dart';
 import 'package:hive/hive.dart';
 
 
-
+typedef LabelledValueChanged<T, U> = void Function(T label);
 class CreateNewTaskPage extends StatefulWidget {
-  const CreateNewTaskPage();
-
+  const CreateNewTaskPage(this.onValueChanged);
+  final LabelledValueChanged<String, dynamic> onValueChanged;
 
   @override
   _CreateNewTaskPageState createState() => _CreateNewTaskPageState();
@@ -186,7 +186,7 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
               width: width,
               child: GestureDetector(
                 onTap:(){
-                  printBox();
+
                   var a = _box?.get(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day ).toString());
                   if(a != null ) {
                     a.add(CleanCalendarEvent('수입','현급','용돈',90000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.blue).toJson());
@@ -195,6 +195,7 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
                     _box?.put(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day ).toString(), [CleanCalendarEvent('수입','현급','용돈',90000,DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString(),color: Colors.blue).toJson()]);
                   }
 
+                  widget.onValueChanged('save');
 
 
 
