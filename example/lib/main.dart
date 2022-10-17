@@ -9,12 +9,13 @@
   import 'package:flutter_heatmap_calendar/flutter_heatmap_calendar.dart';
   import 'package:intl/intl.dart';
   import 'package:hive_flutter/hive_flutter.dart';
-
+  import 'package:flutter_localizations/flutter_localizations.dart';
   Future<void> main() async {
     WidgetsFlutterBinding.ensureInitialized();
     MobileAds.instance.initialize();
     await Hive.initFlutter();// var box =
     await Hive.openBox('myBox');
+
     runApp(MyApp());}
 
   class MyApp extends StatelessWidget {
@@ -24,6 +25,13 @@
       return MaterialApp(
         title: 'Flutter Clean Calendar Demo',
         home: CalendarScreen(),
+        localizationsDelegates: [
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+        ],
+        supportedLocales: [
+          const Locale('ko', 'KR'),
+        ],
       );
     }
   }
@@ -291,6 +299,7 @@
                               context,
                               MaterialPageRoute(
                                 builder: (context) => CreateNewTaskPage(showSnackBar),
+
                               ),
                             );
                           },
@@ -472,8 +481,12 @@
                       ),
                       SettingsTile.switchTile(
                         onToggle: (value) {
-                          print('clear');
+
                           Hive.box('myBox').clear();
+                          this.setState(() {
+                            _events.clear();
+                            _events = {};
+                          });
                         },
                         initialValue: true,
                         leading: Icon(Icons.backup_sharp),
