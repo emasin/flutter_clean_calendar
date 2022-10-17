@@ -194,6 +194,43 @@
     List<CleanCalendarEvent>? _selectedEvents;
 
     Future<int>? future;
+
+
+
+    Widget _buildEventList() {
+      return _selectedEvents != null ? Expanded(
+        child: ListView.builder(
+          padding: EdgeInsets.all(0.0),
+          itemBuilder: (BuildContext context, int index) {
+            final CleanCalendarEvent event = _selectedEvents![index];
+            final String start =
+            DateFormat('HH:mm').format(DateTime.now()).toString();
+            final String end =
+            DateFormat('HH:mm').format(DateTime.now()).toString();
+            return ListTile(
+              contentPadding:
+              EdgeInsets.only(left: 2.0, right: 8.0, top: 2.0, bottom: 2.0),
+              leading: Container(
+                width: 10.0,
+                color: event.color,
+              ),
+              title: Text(event.summary),
+              subtitle:
+              event.description.isNotEmpty ? Text(event.description) : null,
+              trailing: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [Text(start), Text(end)],
+              ),
+              onTap: () {},
+            );
+          },
+          itemCount: _selectedEvents?.length,
+        ),
+      ) : Container();
+    }
+
+
+
     @override
     Widget build(BuildContext context) {
       //_selectedEvents  = _events[_selectedDate];
@@ -221,7 +258,8 @@
 
               child: _selectedIndex == 0 ? Stack(alignment: AlignmentDirectional.bottomCenter,
                   children: <Widget>[
-                    Calendar(
+                    Column(children: [Calendar(
+                      eventListBuilder: (BuildContext context, List<CleanCalendarEvent> events)=>Container(),
                       startOnMonday: false,
                       weekDays: [ '일', '월', '화', '수', '목', '금', '토'],
                       events: _events,
@@ -238,6 +276,9 @@
                       dayOfWeekStyle: TextStyle(
                           color: Colors.black, fontWeight: FontWeight.w800, fontSize: 11),
                     ),
+                      _buildEventList(),
+                    ],)
+                    ,
 
                     new Positioned(
                         bottom: 80.0,
@@ -260,6 +301,7 @@
 
                         )
                     ),
+
 
 
                     _getAdWidget()
