@@ -119,12 +119,12 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
                         DateTimePicker(
                           controller: _dateEditor,
                           type: DateTimePickerType.date,
-                          dateMask: 'd MMM, yyyy',
+                          dateMask: 'yyyy년 MM월 dd일',
                           firstDate: DateTime(2000),
                           lastDate: DateTime(2100),
                           icon: Icon(Icons.event),
                           dateLabelText: 'Date',
-                           locale: Locale("ko",""),
+                          locale: Locale("ko","KR"),
                           validator: (value) => value!.isEmpty ? "Required field *" : null,
                         ),
                         SizedBox(height: 9),
@@ -352,10 +352,10 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
 
       var a = _box?.get(DateFormat('yyyy-MM-dd').parse(_dateEditor.text).toString());
       if(a != null ) {
-        a.add(CleanCalendarEvent('수입','현급','용돈',90000,DateFormat('yyyy-MM-dd').parse(_dateEditor.text).toString(),color: Colors.blue).toJson());
+        a.add(CleanCalendarEvent('수입','현금','용돈',int.parse(_amountEditor.text),DateFormat('yyyy-MM-dd').parse(_dateEditor.text).toString(),color: Colors.blue).toJson());
         _box?.put(DateFormat('yyyy-MM-dd').parse(_dateEditor.text).toString(), a);
       }else {
-        _box?.put(DateFormat('yyyy-MM-dd').parse(_dateEditor.text).toString(), [CleanCalendarEvent('수입','현급','용돈',90000,DateFormat('yyyy-MM-dd').parse(_dateEditor.text).toString(),color: Colors.blue).toJson()]);
+        _box?.put(DateFormat('yyyy-MM-dd').parse(_dateEditor.text).toString(), [CleanCalendarEvent('수입','현금','용돈',int.parse(_amountEditor.text),DateFormat('yyyy-MM-dd').parse(_dateEditor.text).toString(),color: Colors.blue).toJson()]);
       }
 
       widget.onValueChanged('save');

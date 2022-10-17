@@ -222,9 +222,9 @@
                 width: 10.0,
                 color: event.color,
               ),
-              title: Text(event.summary),
+              title: Text(event.mainCategory),
               subtitle:
-              event.description.isNotEmpty ? Text(event.description) : null,
+              Text(event.payType),
               trailing: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [Text(start), Text(end)],
