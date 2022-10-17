@@ -27,12 +27,12 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
     super.initState();
     _box = Hive.box('myBox');
 
-    _users = ["John", "Sam", "Will"];
-    _categories = ["Bills", "Food", "Misc"];
+    _payTypes = ["현금", "카드", "계좌"];
+    _mainTyepe = ["지출", "수입"];
 
-    _sharedRatio = _users!.map((e) => 1.0).toList();
-    shareList = {for (var u in _users!) u: "0.00"};
-    _shareControler = _users!.map((e) => TextEditingController(text: shareList![e])).toList();
+    _sharedRatio = _payTypes!.map((e) => 1.0).toList();
+    shareList = {for (var u in _payTypes!) u: "0.00"};
+    _shareControler = _payTypes!.map((e) => TextEditingController(text: shareList![e])).toList();
   }
 
   void printBox() {
@@ -44,14 +44,14 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
 
 
   TextEditingController _itemEditor = TextEditingController();
-  TextEditingController _personEditor = TextEditingController();
+  TextEditingController _payTypeEditor = TextEditingController();
   TextEditingController _amountEditor = TextEditingController();
   TextEditingController _dateEditor = TextEditingController(text: DateTime.now().toString());
-  TextEditingController _categoryEditor = TextEditingController();
+  TextEditingController _mainTypeEditor = TextEditingController();
   List<TextEditingController>? _shareControler;
   Map<String, String>? shareList;
-  List<String>? _users;
-  List<String>? _categories;
+  List<String>? _payTypes;
+  List<String>? _mainTyepe;
   List<double>? _sharedRatio;
   @override
   Widget build(BuildContext context) {
@@ -65,12 +65,34 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
         child: SingleChildScrollView(
             child: Container(width: double.infinity, child: Column(
               children:[
+                Container(child: MyBackButton(),padding: const EdgeInsets.symmetric(horizontal: 16.0),),
+
+                SizedBox(height: 30,),
                 Padding(
                   padding: EdgeInsets.all(20),
                   child: Form(
                     key: formKey,
                     child: Column(
                       children: <Widget>[
+                        SelectFormField(
+                          // key: ValueKey<int>(count2),
+                          autovalidate: false,
+                          type: SelectFormFieldType.dropdown, // or can be dialog
+                          controller: _mainTypeEditor,
+                          icon: Icon(Icons.category),
+                          hintText: 'Category of the spend',
+                          labelText: 'Category',
+                          items: _mainTyepe!
+                              .map((e) => {
+                            "value": e,
+                            "label": e,
+                          })
+                              .map((e) => Map<String, dynamic>.from(e))
+                              .toList(),
+
+                          validator: (value) => value!.isEmpty ? "Required field *" : null,
+                        ),
+                        SizedBox(height: 9),
                         TextFormField(
                           autovalidateMode: AutovalidateMode.disabled,
                           decoration: const InputDecoration(
@@ -85,8 +107,8 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
                         SelectFormField(
                           icon: Icon(Icons.person_outline),
                           labelText: 'Spent By',
-                          controller: _personEditor,
-                          items: _users!.map((e) => {
+                          controller: _payTypeEditor,
+                          items: _payTypes!.map((e) => {
                             "value": e,
                             "label": e,
                           })
@@ -128,25 +150,7 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
                           validator: (value) => value!.isEmpty ? "Required field *" : null,
                         ),
                         SizedBox(height: 9),
-                        SelectFormField(
-                          // key: ValueKey<int>(count2),
-                          autovalidate: false,
-                          type: SelectFormFieldType.dropdown, // or can be dialog
-                          controller: _categoryEditor,
-                          icon: Icon(Icons.category),
-                          hintText: 'Category of the spend',
-                          labelText: 'Category',
-                          items: _categories!
-                              .map((e) => {
-                            "value": e,
-                            "label": e,
-                          })
-                              .map((e) => Map<String, dynamic>.from(e))
-                              .toList(),
 
-                          validator: (value) => value!.isEmpty ? "Required field *" : null,
-                        ),
-                        SizedBox(height: 9),
                         SizedBox(height: 9),
                         Row(
                           children: [
@@ -171,7 +175,7 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
                           padding: const EdgeInsets.symmetric(horizontal: 9),
                           child: Column(
                             children: List.generate(
-                              _users!.length,
+                              _payTypes!.length,
                                   (index) {
                                 return Column(
                                   children: [
@@ -181,7 +185,7 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
                                         Padding(
                                           padding: const EdgeInsets.symmetric(vertical: 9),
                                           child: Text(
-                                            _users![index],
+                                            _payTypes![index],
                                             style: TextStyle(fontSize: 17),
                                           ),
                                         ),
@@ -337,7 +341,7 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
 
     // _checkList = _users.map((_) => false).toList();
 
-    _shareControler = _users!.map((e) => TextEditingController(text: shareList![e])).toList();
+    _shareControler = _payTypes!.map((e) => TextEditingController(text: shareList![e])).toList();
 
     setState(() {});
   }
@@ -347,15 +351,23 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
 
     //if (formKey.currentState!.validate() ) {
     if (true ) {
-    print('SELECTED ${_dateEditor.text}');
+
+      String mainType = _mainTypeEditor.text;
+      String payType = _payTypeEditor.text;
+      String item = _itemEditor.text;
+      String startTime = DateFormat('yyyy-MM-dd').parse(_dateEditor.text).toString();
+      int money = int.parse(_amountEditor.text);
 
 
-      var a = _box?.get(DateFormat('yyyy-MM-dd').parse(_dateEditor.text).toString());
-      if(a != null ) {
-        a.add(CleanCalendarEvent('수입','현금','용돈',int.parse(_amountEditor.text),DateFormat('yyyy-MM-dd').parse(_dateEditor.text).toString(),color: Colors.blue).toJson());
-        _box?.put(DateFormat('yyyy-MM-dd').parse(_dateEditor.text).toString(), a);
+
+
+      var dateKey = _box?.get(startTime);
+      CleanCalendarEvent calEvent = CleanCalendarEvent(mainType,payType,item,money,startTime,color: mainType == "수입" ? Colors.blue : Colors.red);
+      if(dateKey != null ) {
+        dateKey.add(calEvent.toJson());
+        _box?.put(startTime, dateKey);
       }else {
-        _box?.put(DateFormat('yyyy-MM-dd').parse(_dateEditor.text).toString(), [CleanCalendarEvent('수입','현금','용돈',int.parse(_amountEditor.text),DateFormat('yyyy-MM-dd').parse(_dateEditor.text).toString(),color: Colors.blue).toJson()]);
+        _box?.put(startTime, [calEvent.toJson()]);
       }
 
       widget.onValueChanged('save');

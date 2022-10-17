@@ -224,10 +224,10 @@
               ),
               title: Text(event.mainCategory),
               subtitle:
-              Text(event.payType),
+              Text('${event.mainType} | ${event.payType}'),
               trailing: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [Text(start), Text(end)],
+                children: [Text(event.money.toString())],
               ),
               onTap: () {},
             );
@@ -268,6 +268,7 @@
                   children: <Widget>[
                     Column(children: [Calendar(
                       eventListBuilder: (BuildContext context, List<CleanCalendarEvent> events)=>Container(),
+                      onDateSelected:_handleNewDate,
                       startOnMonday: false,
                       weekDays: [ '일', '월', '화', '수', '목', '금', '토'],
                       events: _events,
@@ -548,6 +549,9 @@
     }
 
     void _handleNewDate(date) {
+      this.setState(() {
+        _selectedEvents  = _events[date];
+      });
       print('Date selected: $date');
     }
   }
