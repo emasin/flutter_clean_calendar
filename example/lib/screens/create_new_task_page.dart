@@ -1,10 +1,14 @@
+import 'dart:convert';
+
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:finan_ledger/theme/colors/light_colors.dart';
 import 'package:finan_ledger/widgets/top_container.dart';
 import 'package:finan_ledger/widgets/back_button.dart';
 import 'package:finan_ledger/widgets/my_text_field.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_clean_calendar/clean_calendar_event.dart';
+import 'package:flutter_tags_x/flutter_tags_x.dart';
 import 'package:intl/intl.dart';
 import 'package:hive/hive.dart';
 import 'package:select_form_field/select_form_field.dart';
@@ -19,7 +23,7 @@ class CreateNewTaskPage extends StatefulWidget {
   _CreateNewTaskPageState createState() => _CreateNewTaskPageState();
 }
 
-class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
+class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTickerProviderStateMixin {
   late Box _box;
 
   @override
@@ -33,6 +37,10 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
     _sharedRatio = _payTypes!.map((e) => 1.0).toList();
     shareList = {for (var u in _payTypes!) u: "0.00"};
     _shareControler = _payTypes!.map((e) => TextEditingController(text: shareList![e])).toList();
+
+
+
+    _items = _list.toList();
   }
 
   void printBox() {
@@ -80,8 +88,8 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
                           type: SelectFormFieldType.dropdown, // or can be dialog
                           controller: _mainTypeEditor,
                           icon: Icon(Icons.category),
-                          hintText: 'Category of the spend',
-                          labelText: 'Category',
+                          hintText: '수입/지출 선택',
+                          labelText: '입출',
                           items: _mainTyepe!
                               .map((e) => {
                             "value": e,
@@ -93,20 +101,9 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
                           validator: (value) => value!.isEmpty ? "Required field *" : null,
                         ),
                         SizedBox(height: 9),
-                        TextFormField(
-                          autovalidateMode: AutovalidateMode.disabled,
-                          decoration: const InputDecoration(
-                            icon: Icon(Icons.shopping_cart_outlined),
-                            hintText: 'Where did you spent the money?',
-                            labelText: 'Item',
-                          ),
-                          controller: _itemEditor,
-                          validator: (value) => value!.isEmpty ? "Required filed *" : null,
-                        ),
-                        SizedBox(height: 9),
                         SelectFormField(
                           icon: Icon(Icons.person_outline),
-                          labelText: 'Spent By',
+                          labelText: '자산구분',
                           controller: _payTypeEditor,
                           items: _payTypes!.map((e) => {
                             "value": e,
@@ -117,17 +114,31 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
                               .toList(),
                           validator: (value) => value!.isEmpty ? "Required filed *" : null,
                         ),
+                        SizedBox(height: 9),
+                        TextFormField(
+                          autovalidateMode: AutovalidateMode.disabled,
+                          decoration: const InputDecoration(
+                            icon: Icon(Icons.shopping_cart_outlined),
+                            hintText: '항목을 상세하게 구분 할 수 있어요',
+                            labelText: '항목 상세',
+                          ),
+                          controller: _itemEditor,
+                          validator: (value) => value!.isEmpty ? "Required filed *" : null,
+                        ),
+                        SizedBox(height: 9),
+
                         TextFormField(
                           autovalidateMode: AutovalidateMode.disabled,
                           keyboardType: TextInputType.number,
                           controller: _amountEditor,
-                          onChanged: (value) {
-
+                          onEditingComplete: () {
+                            _amountEditor.text = NumberFormat.currency(locale: "ko_KR", symbol: "￦").format(int.parse(_amountEditor.text));
                           },
+
                           decoration: const InputDecoration(
                             icon: Icon(Icons.account_balance_wallet_outlined),
-                            hintText: 'How much money is spent?',
-                            labelText: "Amount",
+                            hintText: '금액을 입력하세요',
+                            labelText: "금액",
                           ),
                           validator: (val) {
                             if (val!.isEmpty) return "Required filed *";
@@ -171,111 +182,7 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
                             ),
                           ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 9),
-                          child: Column(
-                            children: List.generate(
-                              _payTypes!.length,
-                                  (index) {
-                                return Column(
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(vertical: 9),
-                                          child: Text(
-                                            _payTypes![index],
-                                            style: TextStyle(fontSize: 17),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Container(
-                                          decoration: BoxDecoration(
-                                              color: Colors.grey.shade400,
-                                              borderRadius: BorderRadius.all(Radius.circular(10))),
-                                          // width: (MediaQuery.of(context).size.width - 100) * 0.5,
-                                          height: 21,
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              IconButton(
-                                                padding: const EdgeInsets.all(0),
-                                                iconSize: 13,
-                                                color: _sharedRatio![index] == 0 ? Colors.black12 : Colors.black,
-                                                icon: const Icon(Icons.remove_circle_outline),
-                                                onPressed: () {
-                                                  if (_amountEditor.text.trim().isEmpty ||
-                                                      double.parse(_amountEditor.text) == 0) return;
-                                                  if (_sharedRatio![index] > 0) {
-                                                    _sharedRatio![index] -= 1;
-
-                                                  }
-                                                },
-                                              ),
-                                              Text(
-                                                _sharedRatio![index]!.toStringAsFixed(2),
-                                                style: const TextStyle(fontSize: 16),
-                                              ),
-                                              IconButton(
-                                                padding: const EdgeInsets.all(0),
-                                                iconSize: 13,
-                                                color: _sharedRatio![index] == 99 ? Colors.black12 : Colors.black,
-                                                icon: const Icon(Icons.add_circle_outline),
-                                                onPressed: () {
-                                                  if (_sharedRatio![index] < 99) {
-                                                    if (_amountEditor.text.trim().isEmpty ||
-                                                        double.parse(_amountEditor.text) == 0) return;
-                                                    _sharedRatio![index] += 1;
-
-                                                  }
-                                                },
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text("₹ ", style: TextStyle(fontSize: 14)),
-                                            Container(
-                                              height: 21,
-                                              width: (MediaQuery.of(context).size.width - 100) * 0.5,
-                                              padding: EdgeInsets.only(left: 7),
-                                              child: TextField(
-                                                onChanged: (val) {
-
-                                                },
-                                                textAlign: TextAlign.left,
-                                                enabled: _sharedRatio![index] != 0,
-                                                controller: _shareControler![index],
-                                                keyboardType: TextInputType.number,
-                                                decoration: InputDecoration(
-                                                  border: InputBorder.none,
-                                                  enabledBorder: UnderlineInputBorder(
-                                                    borderSide: BorderSide(color: Colors.black26),
-                                                  ),
-                                                  focusedBorder: UnderlineInputBorder(
-                                                    borderSide: BorderSide(color: Colors.black38),
-                                                  ),
-                                                ),
-                                                style: TextStyle(fontSize: 14),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                );
-                              },
-                            ),
-                          ),
-                        ),
+                        _tags2,
                         if (showError)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -380,5 +287,196 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> {
 
     return false;
   }
+
+
+
+  final List<String> _list = [
+    '0',
+    'SDK',
+    'plugin updates',
+    'Facebook',
+
+    'Kirchhoff',
+    'Italy',
+    'France',
+    'Spain',
+
+
+  ];
+
+  bool _symmetry = false;
+  bool _removeButton = true;
+  bool _singleItem = true;
+  bool _startDirection = true;
+  bool _horizontalScroll = false;
+  bool _withSuggesttions = false;
+  int _count = 0;
+  int _column = 3;
+  double _fontSize = 14;
+
+  String _itemCombine = 'withTextBefore';
+
+  String _onPressed = '';
+
+  List _icon = [Icons.home, Icons.language, Icons.headset];
+  final GlobalKey<TagsState> _tagStateKey = GlobalKey<TagsState>();
+  TagsTextField get _textField {
+    return TagsTextField(
+      autofocus: false,
+      //width: double.infinity,
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 0),
+      textStyle: TextStyle(
+        fontSize: _fontSize,
+        //height: 1
+      ),
+      enabled: true,
+      constraintSuggestion: true,
+      suggestions: true
+          ? [
+        "One",
+        "two",
+        "android",
+        "Dart",
+
+      ]
+          : null,
+      onSubmitted: (String str) {
+        setState(() {
+          _items.add(str);
+        });
+      },
+    );
+  }
+
+
+
+
+
+
+
+
+
+  Widget get _tags2 {
+    //popup Menu
+
+
+    ItemTagsCombine combine = ItemTagsCombine.onlyText;
+
+    switch (_itemCombine) {
+      case 'onlyText':
+        combine = ItemTagsCombine.onlyText;
+        break;
+      case 'onlyIcon':
+        combine = ItemTagsCombine.onlyIcon;
+        break;
+      case 'onlyIcon':
+        combine = ItemTagsCombine.onlyIcon;
+        break;
+      case 'onlyImage':
+        combine = ItemTagsCombine.onlyImage;
+        break;
+      case 'imageOrIconOrText':
+        combine = ItemTagsCombine.imageOrIconOrText;
+        break;
+      case 'withTextAfter':
+        combine = ItemTagsCombine.withTextAfter;
+        break;
+      case 'withTextBefore':
+        combine = ItemTagsCombine.withTextBefore;
+        break;
+    }
+
+    return Tags(
+      key: Key("2"),
+      symmetry: _symmetry,
+      columns: _column,
+      horizontalScroll: false,
+      verticalDirection:
+      _startDirection ? VerticalDirection.up : VerticalDirection.down,
+
+      heightHorizontalScroll: 60 * (_fontSize / 14),
+      textField: _textField,
+      itemCount: _items.length,
+      itemBuilder: (index) {
+        final item = _items[index];
+
+        return GestureDetector(
+          child: ItemTags(
+            key: Key(index.toString()),
+            index: index,
+            title: item,
+            pressEnabled: false,
+            activeColor: Colors.green,
+            combine: combine,
+            image: index > 0 && index < 5
+                ? ItemTagsImage(image: AssetImage("img/p$index.jpg"))
+                : (1 == 1
+                ? ItemTagsImage(
+                image: NetworkImage(
+                    "https://image.flaticon.com/icons/png/512/44/44948.png"))
+                : null),
+            icon: (item == '0' || item == '1' || item == '2')
+                ? ItemTagsIcon(
+              icon: _icon[int.parse(item)],
+            )
+                : null,
+            removeButton: ItemTagsRemoveButton(
+              backgroundColor: Colors.green[900],
+              onRemoved: () {
+                setState(() {
+                  _items.removeAt(index);
+                });
+                return true;
+              },
+            ),
+            textScaleFactor:
+            utf8.encode(item.substring(0, 1)).length > 2 ? 0.8 : 1,
+            textStyle: TextStyle(
+              fontSize: _fontSize,
+            ),
+          ),
+          onTapDown: (details) {
+            print(details.globalPosition);
+            _tapPosition = details.globalPosition;},
+          onLongPress: () {
+            showMenu(
+              //semanticLabel: item,
+                items: <PopupMenuEntry>[
+                  PopupMenuItem(
+                    child: Text(item, style: TextStyle(color: Colors.blueGrey)),
+                    enabled: false,
+                  ),
+                  PopupMenuDivider(),
+                  PopupMenuItem(
+                    value: 1,
+                    child: Row(
+                      children: <Widget>[
+                        Icon(Icons.content_copy),
+                        Text("Copy text"),
+                      ],
+                    ),
+                  ),
+                ],
+                context: context,
+                position: RelativeRect.fromRect(
+                    _tapPosition & Size(40, 40),
+                    Rect.zero ) // & RelativeRect.fromLTRB(65.0, 40.0, 0.0, 0.0),
+            )
+                .then((value) {
+              if (value == 1) Clipboard.setData(ClipboardData(text: item));
+            });
+          },
+        );
+      },
+    );
+  }
+
+
+
+  late Offset _tapPosition;
+  late List _items;
+
+
+
   bool showError = false;
 }
