@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
@@ -52,18 +53,37 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
 
 
   TextEditingController _itemEditor = TextEditingController();
-  TextEditingController _payTypeEditor = TextEditingController();
+  TextEditingController _payTypeEditor = TextEditingController(text: '현금');
   TextEditingController _amountEditor = TextEditingController();
   TextEditingController _dateEditor = TextEditingController(text: DateTime.now().toString());
-  TextEditingController _mainTypeEditor = TextEditingController();
+  TextEditingController _mainTypeEditor = TextEditingController(text: '지출');
   List<TextEditingController>? _shareControler;
   Map<String, String>? shareList;
   List<String>? _payTypes;
   List<String>? _mainTyepe;
   List<double>? _sharedRatio;
+  final List<bool> _selectedMainType = <bool>[false, true];
+  final List<Widget> mainTypeButtons = <Widget>[
+    Text('수입'),
+    Text('지출'),
+  ];
+
+  final List<bool> _selectedPayType = <bool>[true, false, false];
+  final List<Widget> payTypeButtons = <Widget>[
+    Text('현금'),
+    Text('카드'),
+    Text('계좌'),
+  ];
+
+
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
+    //double width = MediaQuery.of(context).size.width;
+
+    final width2 = MediaQuery.of(context).size.width * 0.85 / max(1,2);
+    final width3 = MediaQuery.of(context).size.width * 0.85 / max(1,2);
+
+
     var downwardIcon = Icon(
       Icons.keyboard_arrow_down,
       color: Colors.black54,
@@ -82,6 +102,31 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
                     key: formKey,
                     child: Column(
                       children: <Widget>[
+
+                        ToggleButtons(
+
+                          direction: Axis.horizontal,
+                          onPressed: (int index) {
+                            setState(() {
+                              // The button that is tapped is set to true, and the others to false.
+                              for (int i = 0; i < _selectedMainType.length; i++) {
+                                _selectedMainType[i] = i == index;
+                              }
+                              _mainTypeEditor.text = (mainTypeButtons[index] as Text).data!;
+                              print(_mainTypeEditor.text);
+
+                            });
+                          },
+                          borderRadius: const BorderRadius.all(Radius.circular(8)),
+                          selectedBorderColor: Colors.red[700],
+                          selectedColor: Colors.white,
+                          fillColor: Colors.red[200],
+                          color: Colors.red[400],
+                          constraints: BoxConstraints(maxWidth: width2, minWidth: width2, minHeight: 40.0, maxHeight: 40.0),
+                          isSelected: _selectedMainType,
+                          children: mainTypeButtons,
+                        ),
+                        /**SizedBox(height: 9),
                         SelectFormField(
                           // key: ValueKey<int>(count2),
                           autovalidate: false,
@@ -99,9 +144,9 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
                               .toList(),
 
                           validator: (value) => value!.isEmpty ? "Required field *" : null,
-                        ),
+                        ),**/
                         SizedBox(height: 9),
-                        SelectFormField(
+                        /**SelectFormField(
                           icon: Icon(Icons.person_outline),
                           labelText: '자산구분',
                           controller: _payTypeEditor,
@@ -113,6 +158,29 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
                                   (e) => Map<String, dynamic>.from(e)) // select form field items require <String,dynamic>
                               .toList(),
                           validator: (value) => value!.isEmpty ? "Required filed *" : null,
+                        ),**/
+                        ToggleButtons(
+
+                          direction: Axis.horizontal,
+                          onPressed: (int index) {
+                            setState(() {
+                              // The button that is tapped is set to true, and the others to false.
+                              for (int i = 0; i < _selectedPayType.length; i++) {
+                                _selectedPayType[i] = i == index;
+                              }
+                              _payTypeEditor.text = (payTypeButtons[index] as Text).data!;
+                              print(_mainTypeEditor.text);
+
+                            });
+                          },
+                          borderRadius: const BorderRadius.all(Radius.circular(8)),
+                          selectedBorderColor: Colors.red[700],
+                          selectedColor: Colors.white,
+                          fillColor: Colors.red[200],
+                          color: Colors.red[400],
+                          constraints: BoxConstraints(maxWidth: width3, minWidth: width3, minHeight: 40.0, maxHeight: 40.0),
+                          isSelected: _selectedPayType,
+                          children: payTypeButtons,
                         ),
                         SizedBox(height: 9),
                         TextFormField(
@@ -265,9 +333,6 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
       String startTime = DateFormat('yyyy-MM-dd').parse(_dateEditor.text).toString();
       int money = int.parse(_amountEditor.text);
 
-
-
-
       var dateKey = _box?.get(startTime);
       CleanCalendarEvent calEvent = CleanCalendarEvent(mainType,payType,item,money,startTime,color: mainType == "수입" ? Colors.blue : Colors.red);
       if(dateKey != null ) {
@@ -405,21 +470,18 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
             key: Key(index.toString()),
             index: index,
             title: item,
-            pressEnabled: false,
+            active: false,
+            pressEnabled: true,
             activeColor: Colors.green,
+            singleItem: true,
             combine: combine,
-            image: index > 0 && index < 5
-                ? ItemTagsImage(image: AssetImage("img/p$index.jpg"))
-                : (1 == 1
-                ? ItemTagsImage(
-                image: NetworkImage(
-                    "https://image.flaticon.com/icons/png/512/44/44948.png"))
-                : null),
+
             icon: (item == '0' || item == '1' || item == '2')
                 ? ItemTagsIcon(
               icon: _icon[int.parse(item)],
             )
                 : null,
+            onPressed: (item) => print(item),
             removeButton: ItemTagsRemoveButton(
               backgroundColor: Colors.green[900],
               onRemoved: () {
@@ -458,6 +520,7 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
                   ),
                 ],
                 context: context,
+
                 position: RelativeRect.fromRect(
                     _tapPosition & Size(40, 40),
                     Rect.zero ) // & RelativeRect.fromLTRB(65.0, 40.0, 0.0, 0.0),
