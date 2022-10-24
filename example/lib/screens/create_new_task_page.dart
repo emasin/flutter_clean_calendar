@@ -12,7 +12,7 @@ import 'package:flutter_clean_calendar/clean_calendar_event.dart';
 import 'package:flutter_tags_x/flutter_tags_x.dart';
 import 'package:intl/intl.dart';
 import 'package:hive/hive.dart';
-import 'package:select_form_field/select_form_field.dart';
+import 'package:flutter_tagging_plus/flutter_tagging_plus.dart';
 
 typedef LabelledValueChanged<T, U> = void Function(T label);
 
@@ -39,10 +39,22 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
     shareList = {for (var u in _payTypes!) u: "0.00"};
     _shareControler = _payTypes!.map((e) => TextEditingController(text: shareList![e])).toList();
 
-
-
     _items = _list.toList();
+    _selectedLanguages = [];
   }
+
+  @override
+  void dispose() {
+    _selectedLanguages.clear();
+    _itemEditor.clear();
+    _payTypeEditor.clear();
+    _amountEditor.clear();
+    _dateEditor.clear();
+    _mainTypeEditor.clear();
+
+    super.dispose();
+  }
+
 
   void printBox() {
     final cats = _box.values;
@@ -76,18 +88,24 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
   ];
 
 
+  String _selectedValuesJson = 'Nothing to show';
+  late List<Language> _selectedLanguages;
+
+
   @override
   Widget build(BuildContext context) {
     //double width = MediaQuery.of(context).size.width;
 
-    final width2 = MediaQuery.of(context).size.width * 0.85 / max(1,2);
-    final width3 = MediaQuery.of(context).size.width * 0.85 / max(1,2);
+    final width2 = MediaQuery.of(context).size.width * 0.87 / max(1,2);
+    final width3 = MediaQuery.of(context).size.width * 0.87 / max(1,3);
 
 
     var downwardIcon = Icon(
       Icons.keyboard_arrow_down,
       color: Colors.black54,
     );
+
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -146,6 +164,18 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
                           validator: (value) => value!.isEmpty ? "Required field *" : null,
                         ),**/
                         SizedBox(height: 9),
+                        DateTimePicker(
+                          controller: _dateEditor,
+                          type: DateTimePickerType.date,
+                          dateMask: 'yyyy년 MM월 dd일',
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2100),
+
+                          dateLabelText: '날짜',
+                          locale: Locale("ko","KR"),
+                          validator: (value) => value!.isEmpty ? "Required field *" : null,
+                        ),
+                        SizedBox(height: 18),
                         /**SelectFormField(
                           icon: Icon(Icons.person_outline),
                           labelText: '자산구분',
@@ -183,16 +213,85 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
                           children: payTypeButtons,
                         ),
                         SizedBox(height: 9),
+
+                        Padding(
+                          padding: const EdgeInsets.all(1.0),
+                          child: FlutterTagging<Language>(
+                            initialItems: _selectedLanguages,
+                            textFieldConfiguration: TextFieldConfiguration(
+                              decoration: InputDecoration(
+                                border: InputBorder.none,
+                                filled: true,
+                                fillColor: Colors.white.withAlpha(30),
+                                hintText: '자주 입력하는 항목 검색',
+                                labelText: '항목검색',
+                              ),
+                            ),
+                            findSuggestions: getLanguages,
+                            additionCallback: (value) {
+                              return Language(
+                                name: value,
+                                position: 0,
+                              );
+                            },
+                            onAdded: (language) {
+                              // api calls here, triggered when add to tag button is pressed
+                              return Language(name: language.name, position: -1);
+                            },
+                            configureSuggestion: (lang) {
+                              return SuggestionConfiguration(
+                                title: Text(lang.name),
+                                subtitle: Text(lang.position.toString()),
+                                additionWidget: Chip(
+                                  avatar: Icon(
+                                    Icons.add_circle,
+                                    color: Colors.white,
+                                  ),
+                                  label: Text('항목 추가'),
+                                  labelStyle: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14.0,
+                                    fontWeight: FontWeight.w300,
+                                  ),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            },
+                            configureChip: (lang) {
+                              return ChipConfiguration(
+                                label: Text(lang.name),
+                                backgroundColor: Colors.green,
+                                labelStyle: TextStyle(color: Colors.white),
+                                deleteIconColor: Colors.white,
+                              );
+                            },
+                            onChanged: () {
+                              setState(() {
+                                _selectedValuesJson = _selectedLanguages
+                                    .map<String>((lang) => '\n${lang.toJson()}')
+                                    .toList()
+                                    .toString();
+                                _selectedValuesJson =
+                                    _selectedValuesJson.replaceFirst('}]', '}\n]');
+                              });
+                            },
+                          ),
+                        ),
+
+
+
+
+                        /**
                         TextFormField(
                           autovalidateMode: AutovalidateMode.disabled,
                           decoration: const InputDecoration(
-                            icon: Icon(Icons.shopping_cart_outlined),
-                            hintText: '항목을 상세하게 구분 할 수 있어요',
-                            labelText: '항목 상세',
+
+                            hintText: '항목을 입력해주세요',
+                            labelText: '항목',
                           ),
                           controller: _itemEditor,
                           validator: (value) => value!.isEmpty ? "Required filed *" : null,
-                        ),
+                        ),**/
                         SizedBox(height: 9),
 
                         TextFormField(
@@ -204,7 +303,7 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
                           },
 
                           decoration: const InputDecoration(
-                            icon: Icon(Icons.account_balance_wallet_outlined),
+
                             hintText: '금액을 입력하세요',
                             labelText: "금액",
                           ),
@@ -216,19 +315,8 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
                             return null;
                           },
                         ),
-                        SizedBox(height: 9),
-                        DateTimePicker(
-                          controller: _dateEditor,
-                          type: DateTimePickerType.date,
-                          dateMask: 'yyyy년 MM월 dd일',
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2100),
-                          icon: Icon(Icons.event),
-                          dateLabelText: 'Date',
-                          locale: Locale("ko","KR"),
-                          validator: (value) => value!.isEmpty ? "Required field *" : null,
-                        ),
-                        SizedBox(height: 9),
+
+
 
                         SizedBox(height: 9),
                         Row(
@@ -242,7 +330,7 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
                               child: Column(
                                 children: [
                                   Text(
-                                    "Shared Between",
+                                    "자세한 기록을 남겨보아요.",
                                     style: TextStyle(fontSize: 16, color: Colors.black.withOpacity(.7)),
                                   )
                                 ],
@@ -542,4 +630,42 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
 
 
   bool showError = false;
+}
+
+Future<List<Language>> getLanguages(String query) async {
+  await Future.delayed(Duration(milliseconds: 500), null);
+  return <Language>[
+    Language(name: '식비', position: 1),
+    Language(name: '교통비', position: 2),
+    Language(name: '주유비', position: 3),
+    Language(name: '문화생활', position: 4),
+    Language(name: '통신', position: 5),
+    Language(name: '공과금', position: 6),
+  ]
+      .where((lang) => lang.name.toLowerCase().contains(query.toLowerCase()))
+      .toList();
+}
+
+/// Language Class
+class Language extends Taggable {
+  ///
+  final String name;
+
+  ///
+  final int position;
+
+  /// Creates Language
+  Language({
+    required this.name,
+    required this.position,
+  });
+
+  @override
+  List<Object> get props => [name];
+
+  /// Converts the class to json string.
+  String toJson() => '''  {
+    "name": $name,\n
+    "position": $position\n
+  }''';
 }

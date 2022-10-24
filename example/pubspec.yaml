@@ -37,6 +37,7 @@ dependencies:
   date_time_picker: "^2.1.0"
   select_form_field: "^2.2.0"
   flutter_tags_x: ^1.1.0
+  flutter_tagging_plus: ^4.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
