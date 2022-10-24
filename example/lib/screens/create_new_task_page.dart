@@ -229,12 +229,17 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
                             ),
                             findSuggestions: getLanguages,
                             additionCallback: (value) {
+                              print('additionCallback $_selectedLanguages');
+
+
                               return Language(
                                 name: value,
                                 position: 0,
                               );
                             },
                             onAdded: (language) {
+
+                              print('onAdded $_selectedLanguages');
                               // api calls here, triggered when add to tag button is pressed
                               return Language(name: language.name, position: -1);
                             },
@@ -267,12 +272,16 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
                             },
                             onChanged: () {
                               setState(() {
-                                _selectedValuesJson = _selectedLanguages
-                                    .map<String>((lang) => '\n${lang.toJson()}')
-                                    .toList()
-                                    .toString();
-                                _selectedValuesJson =
-                                    _selectedValuesJson.replaceFirst('}]', '}\n]');
+                                if(_selectedLanguages.length == 0) {
+                                  _selectedValuesJson = _selectedLanguages
+                                      .map<String>((lang) => '\n${lang
+                                      .toJson()}')
+                                      .toList()
+                                      .toString();
+                                  _selectedValuesJson =
+                                      _selectedValuesJson.replaceFirst(
+                                          '}]', '}\n]');
+                                }
                               });
                             },
                           ),
