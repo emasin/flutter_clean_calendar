@@ -91,6 +91,11 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
   String _selectedValuesJson = 'Nothing to show';
   late List<Language> _selectedLanguages;
 
+  static const List<String> _options = <String>[
+    '교통비',
+    '식비',
+    '공과금',
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -213,7 +218,7 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
                           children: payTypeButtons,
                         ),
                         SizedBox(height: 9),
-
+/**
                         Padding(
                           padding: const EdgeInsets.all(1.0),
                           child: FlutterTagging<Language>(
@@ -290,8 +295,66 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
                             },
                           ),
                         ),
+**/
 
+                      RawAutocomplete<String>(
+                        optionsBuilder: (TextEditingValue textEditingValue) {
+                          return _options.where((String option) {
+                            return option.contains(textEditingValue.text.toLowerCase());
+                          });
+                        },
+                        fieldViewBuilder: (BuildContext context,
+                            TextEditingController textEditingController,
+                            FocusNode focusNode,
+                            VoidCallback onFieldSubmitted) {
+                          return TextFormField(
 
+                            decoration: const InputDecoration(
+
+                              hintText: '항목을 입력하세요.',
+                              labelText: "항목",
+                            ),
+                            controller: textEditingController,
+                            focusNode: focusNode,
+                            onFieldSubmitted: (String value) {
+                              _itemEditor.text = value;
+                              print('onFieldSubmitted $value');
+                              onFieldSubmitted();
+                            },
+                            onEditingComplete: () {
+                              _itemEditor.text = textEditingController.text;
+                              print('onFieldSubmitted ${textEditingController.text}');
+                            },
+                          );
+                        },
+                        optionsViewBuilder: (BuildContext context,
+                            AutocompleteOnSelected<String> onSelected, Iterable<String> options) {
+                          return Align(
+                            alignment: Alignment.topLeft,
+                            child: Material(
+                              elevation: 4.0,
+                              child: SizedBox(
+                                height: 200.0,
+                                child: ListView.builder(
+                                  padding: const EdgeInsets.all(8.0),
+                                  itemCount: options.length,
+                                  itemBuilder: (BuildContext context, int index) {
+                                    final String option = options.elementAt(index);
+                                    return GestureDetector(
+                                      onTap: () {
+                                        onSelected(option);
+                                      },
+                                      child: ListTile(
+                                        title: Text(option),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
 
 
                         /**
