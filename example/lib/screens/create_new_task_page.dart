@@ -220,15 +220,17 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
                             initialItems: _selectedLanguages,
                             textFieldConfiguration: TextFieldConfiguration(
                               decoration: InputDecoration(
-                                border: InputBorder.none,
-                                filled: true,
-                                fillColor: Colors.white.withAlpha(30),
+                                border: UnderlineInputBorder(),
+                                filled: false,
+                                fillColor:Colors.red[200],
                                 hintText: '자주 입력하는 항목 검색',
-                                labelText: '항목검색',
+                                labelText: '${_mainTypeEditor.text}항목',
+
                               ),
                             ),
                             findSuggestions: getLanguages,
-                            additionCallback: (value) {
+
+                            additionCallback: _selectedLanguages.length > 0 ? null : (value) {
                               print('additionCallback $_selectedLanguages');
 
 
@@ -265,7 +267,7 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
                             configureChip: (lang) {
                               return ChipConfiguration(
                                 label: Text(lang.name),
-                                backgroundColor: Colors.green,
+                                backgroundColor: Colors.pinkAccent,
                                 labelStyle: TextStyle(color: Colors.white),
                                 deleteIconColor: Colors.white,
                               );
@@ -282,6 +284,8 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
                                       _selectedValuesJson.replaceFirst(
                                           '}]', '}\n]');
                                 }
+
+                                print(_selectedValuesJson);
                               });
                             },
                           ),
@@ -331,7 +335,7 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
                         Row(
                           children: [
                             Icon(
-                              Icons.people_outline,
+                              Icons.more,
                               color: Colors.black.withOpacity(.6),
                             ),
                             Padding(
@@ -347,7 +351,82 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
                             ),
                           ],
                         ),
-                        _tags2,
+
+                        Padding(
+                          padding: const EdgeInsets.all(1.0),
+                          child: FlutterTagging<Language>(
+                            initialItems: _selectedLanguages,
+                            textFieldConfiguration: TextFieldConfiguration(
+                              decoration: InputDecoration(
+                                border: UnderlineInputBorder(),
+                                filled: false,
+                                fillColor:Colors.red[200],
+                                hintText: '항목상세 입력',
+                                labelText: '상세입력',
+
+                              ),
+                            ),
+                            findSuggestions: getLanguages,
+
+                            additionCallback: (value) {
+                              print('additionCallback $_selectedLanguages');
+
+
+                              return Language(
+                                name: value,
+                                position: 0,
+                              );
+                            },
+                            onAdded: (language) {
+
+                              print('onAdded $_selectedLanguages');
+                              // api calls here, triggered when add to tag button is pressed
+                              return Language(name: language.name, position: -1);
+                            },
+                            configureSuggestion: (lang) {
+                              return SuggestionConfiguration(
+                                title: Text(lang.name),
+                                subtitle: Text(lang.position.toString()),
+                                additionWidget: Chip(
+                                  avatar: Icon(
+                                    Icons.add_circle,
+                                    color: Colors.white,
+                                  ),
+                                  label: Text('항목 추가'),
+                                  labelStyle: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14.0,
+                                    fontWeight: FontWeight.w300,
+                                  ),
+                                  backgroundColor: Colors.green,
+                                ),
+                              );
+                            },
+                            configureChip: (lang) {
+                              return ChipConfiguration(
+                                label: Text(lang.name),
+                                backgroundColor: Colors.green,
+                                labelStyle: TextStyle(color: Colors.white),
+                                deleteIconColor: Colors.white,
+                              );
+                            },
+                            onChanged: () {
+                              setState(() {
+                                print('_selectedLanguages.length ${_selectedLanguages.length}');
+                                if(_selectedLanguages.length == 0) {
+                                  _selectedValuesJson = _selectedLanguages
+                                      .map<String>((lang) => '\n${lang
+                                      .toJson()}')
+                                      .toList()
+                                      .toString();
+                                  _selectedValuesJson =
+                                      _selectedValuesJson.replaceFirst(
+                                          '}]', '}\n]');
+                                }
+                              });
+                            },
+                          ),
+                        ),
                         if (showError)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
