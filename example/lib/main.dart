@@ -222,7 +222,7 @@
                 width: 10.0,
                 color: event.color,
               ),
-              title: Text(event.mainCategory),
+              title: Text('${event.mainCategory} | ${event.description}'),
               subtitle:
               Text('${event.mainType} | ${event.payType}'),
               trailing: Column(

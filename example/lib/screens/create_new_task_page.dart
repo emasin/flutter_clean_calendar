@@ -573,7 +573,10 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
       int money = int.parse(_amountEditor.text);
 
       var dateKey = _box?.get(startTime);
-      CleanCalendarEvent calEvent = CleanCalendarEvent(mainType,payType,item,money,startTime,color: mainType == "수입" ? Colors.blue : Colors.red);
+      _selectedLanguages.join(",");
+      String desc = _selectedLanguages.map((e) =>  e.name).toList().join(',');
+      print('desc $_selectedLanguages , $desc');
+      CleanCalendarEvent calEvent = CleanCalendarEvent(mainType,payType,item,money,startTime,color: mainType == "수입" ? Colors.blue : Colors.red,description:desc);
       if(dateKey != null ) {
         dateKey.add(calEvent.toJson());
         _box?.put(startTime, dateKey);
