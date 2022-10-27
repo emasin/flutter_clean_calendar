@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:date_time_picker/date_time_picker.dart';
+import 'package:finan_ledger/widgets/keyboardoverlay.dart';
 import 'package:flutter/material.dart';
 import 'package:finan_ledger/theme/colors/light_colors.dart';
 import 'package:finan_ledger/widgets/top_container.dart';
@@ -27,11 +28,13 @@ class CreateNewTaskPage extends StatefulWidget {
 class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTickerProviderStateMixin {
   late Box _box;
 
+  late ScrollController _scrollController;
+
   @override
   void initState() {
     super.initState();
     _box = Hive.box('myBox');
-
+    _scrollController = ScrollController();
     _payTypes = ["현금", "카드", "계좌"];
     _mainTyepe = ["지출", "수입"];
 
@@ -41,6 +44,17 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
 
     _items = _list.toList();
     _selectedLanguages = [];
+
+    numberFocusNode.addListener(() {
+      bool hasFocus = numberFocusNode.hasFocus;
+      if (hasFocus) {
+        KeyboardOverlay.showOverlay(context);
+      } else {
+        KeyboardOverlay.removeOverlay();
+      }
+    });
+
+
   }
 
   @override
@@ -97,6 +111,13 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
     '공과금',
   ];
 
+  /**
+   * only number keyboard
+   */
+  FocusNode numberFocusNode = FocusNode();
+  TextEditingController textController = TextEditingController();
+
+
   @override
   Widget build(BuildContext context) {
     //double width = MediaQuery.of(context).size.width;
@@ -112,8 +133,10 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
 
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(
+            controller: _scrollController,
             child: Container(width: double.infinity, child: Column(
               children:[
                 Container(child: MyBackButton(),padding: const EdgeInsets.symmetric(horizontal: 16.0),),
@@ -343,6 +366,11 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
                                     return GestureDetector(
                                       onTap: () {
                                         onSelected(option);
+
+                                        _itemEditor.text = option;
+                                        print('onSelected ${option}');
+
+
                                       },
                                       child: ListTile(
                                         title: Text(option),
@@ -368,58 +396,21 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
                           controller: _itemEditor,
                           validator: (value) => value!.isEmpty ? "Required filed *" : null,
                         ),**/
-                        SizedBox(height: 9),
-
-                        TextFormField(
-                          autovalidateMode: AutovalidateMode.disabled,
-                          keyboardType: TextInputType.number,
-                          controller: _amountEditor,
-                          onEditingComplete: () {
-                            _amountEditor.text = NumberFormat.currency(locale: "ko_KR", symbol: "￦").format(int.parse(_amountEditor.text));
-                          },
-
-                          decoration: const InputDecoration(
-
-                            hintText: '금액을 입력하세요',
-                            labelText: "금액",
-                          ),
-                          validator: (val) {
-                            if (val!.isEmpty) return "Required filed *";
-                            if (double.tryParse(val) == null) {
-                              return "Entre a valid number ";
-                            }
-                            return null;
-                          },
-                        ),
-
-
-
-                        SizedBox(height: 9),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.more,
-                              color: Colors.black.withOpacity(.6),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(10),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    "자세한 기록을 남겨보아요.",
-                                    style: TextStyle(fontSize: 16, color: Colors.black.withOpacity(.7)),
-                                  )
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
 
                         Padding(
                           padding: const EdgeInsets.all(1.0),
                           child: FlutterTagging<Language>(
                             initialItems: _selectedLanguages,
                             textFieldConfiguration: TextFieldConfiguration(
+                              onTap: () {
+                                _scrollController.animateTo(
+                                    400.0,
+                                    duration: Duration(milliseconds: 500),
+                                    curve: Curves.ease).then((value) async {
+                                  await Future.delayed(Duration(seconds: 5));
+                                });
+
+                              },
                               decoration: InputDecoration(
                                 border: UnderlineInputBorder(),
                                 filled: false,
@@ -490,6 +481,39 @@ class _CreateNewTaskPageState extends State<CreateNewTaskPage> with SingleTicker
                             },
                           ),
                         ),
+
+                        SizedBox(height: 9),
+
+                        TextFormField(
+                          autovalidateMode: AutovalidateMode.disabled,
+                          keyboardType: TextInputType.number,
+                          focusNode: numberFocusNode,
+                          controller: _amountEditor,
+                          //controller: _amountEditor,
+                          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                          onEditingComplete: () {
+                            _amountEditor.text = NumberFormat.currency(locale: "ko_KR", symbol: "￦").format(int.parse(_amountEditor.text));
+                          },
+
+                          decoration: const InputDecoration(
+
+                            hintText: '금액을 입력하세요',
+                            labelText: "금액",
+                          ),
+                          validator: (val) {
+                            if (val!.isEmpty) return "Required filed *";
+                            if (double.tryParse(val) == null) {
+                              return "Entre a valid number ";
+                            }
+                            return null;
+                          },
+                        ),
+
+
+
+                        SizedBox(height: 250),
+
+
                         if (showError)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
